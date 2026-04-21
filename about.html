@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW" style="background:#040b1a !important; color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Emma Thousand</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root { --bg:#040b1a; --cream:#F0F4FF; --neon:#7FFF3A; --accent:#FF6B35; --purple:#B07EFF; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #040b1a !important; color: #F0F4FF; font-family: 'Space Mono', monospace; overflow-x: hidden; cursor: none; min-height: 100vh; }
+    body::after { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"); pointer-events: none; z-index: 100; opacity: 0.35; mix-blend-mode: overlay; }
+
+    .cursor { width: 10px; height: 10px; background: var(--neon); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: exclusion; transition: width .2s, height .2s; }
+    .cursor-ring { width: 32px; height: 32px; border: 1px solid rgba(127,255,58,0.4); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
+    #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    .orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+
+    /* NAV */
+    nav { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 28px 40px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cream); text-decoration: none; }
+    .nav-logo span { color: var(--neon); }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(240,244,255,0.6); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--neon); }
+
+    /* PAGE LAYOUT — two column */
+    .about-layout { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 80px); }
+
+    /* LEFT — big identity statement */
+    .about-left {
+      padding: 80px 60px 80px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      position: sticky;
+      top: 0;
+      height: calc(100vh - 80px);
+      overflow: hidden;
+    }
+
+    .about-eyebrow { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--neon); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .about-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--neon); }
+
+    .about-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 7vw, 100px);
+      text-transform: uppercase;
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+    }
+    .about-name .line-dim { color: rgba(240,244,255,0.2); }
+    .about-name .script {
+      font-family: 'Caveat', cursive;
+      color: var(--neon);
+      font-size: clamp(36px, 4.5vw, 64px);
+      text-transform: none;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .about-role {
+      margin-top: 36px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.45);
+      line-height: 2;
+      font-family: 'Noto Serif TC', serif;
+    }
+    .about-role strong { color: var(--cream); font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 0.04em; }
+
+    .about-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; }
+    .tag { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 14px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: rgba(240,244,255,0.7); transition: all 0.2s; }
+    .tag.active, .tag:hover { background: rgba(127,255,58,0.08); border-color: rgba(127,255,58,0.35); color: var(--neon); }
+
+    .about-quote {
+      font-family: 'Noto Serif TC', serif;
+      font-size: clamp(16px, 1.6vw, 20px);
+      color: rgba(240,244,255,0.5);
+      line-height: 1.8;
+      padding-left: 20px;
+      border-left: 2px solid rgba(127,255,58,0.4);
+      margin-top: 40px;
+      transform: rotate(-0.5deg);
+    }
+
+    .about-social { display: flex; gap: 12px; margin-top: 40px; }
+    .social-link { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(240,244,255,0.4); text-decoration: none; padding: 8px 16px; border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; transition: all 0.2s; }
+    .social-link:hover { color: var(--neon); border-color: rgba(127,255,58,0.3); background: rgba(127,255,58,0.05); }
+
+    /* RIGHT — scrollable content */
+    .about-right { padding: 80px 40px 80px 60px; overflow-y: auto; }
+
+    .section-block { margin-bottom: 72px; }
+    .section-label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(240,244,255,0.3); margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    .section-label::before { content: ''; width: 20px; height: 1px; background: rgba(240,244,255,0.3); }
+
+    /* Story paragraph */
+    .story-p { font-family: 'Noto Serif TC', serif; font-size: 15px; line-height: 2.1; color: rgba(240,244,255,0.72); margin-bottom: 22px; letter-spacing: 0.04em; }
+    .story-p strong { color: var(--cream); font-weight: 600; }
+    .story-p em { color: rgba(240,244,255,0.5); font-style: italic; }
+
+    /* Chapter heading */
+    .chapter-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px, 2.5vw, 32px); text-transform: uppercase; color: var(--cream); margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
+    .chapter-title::before { content: ''; width: 24px; height: 2px; background: var(--neon); flex-shrink: 0; }
+
+    /* Timeline — current role */
+    .timeline-item { display: flex; gap: 24px; margin-bottom: 28px; padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .timeline-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .tl-year { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: rgba(240,244,255,0.25); flex-shrink: 0; width: 60px; padding-top: 2px; }
+    .tl-content {}
+    .tl-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; text-transform: uppercase; color: var(--cream); margin-bottom: 6px; }
+    .tl-sub { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--neon); margin-bottom: 10px; }
+    .tl-desc { font-family: 'Noto Serif TC', serif; font-size: 14px; line-height: 1.9; color: rgba(240,244,255,0.58); }
+
+    /* Values / Interest cards */
+    .interest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .interest-card { padding: 22px; border-radius: 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); transition: transform 0.3s, border-color 0.3s; }
+    .interest-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.13); }
+    .interest-icon { font-size: 22px; margin-bottom: 10px; }
+    .interest-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; text-transform: uppercase; color: var(--cream); margin-bottom: 8px; }
+    .interest-desc { font-family: 'Noto Serif TC', serif; font-size: 13px; line-height: 1.8; color: rgba(240,244,255,0.52); }
+
+    /* Vision goals */
+    .goal-row { display: flex; gap: 16px; align-items: flex-start; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .goal-row:last-child { border-bottom: none; }
+    .goal-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: rgba(255,255,255,0.08); flex-shrink: 0; width: 48px; line-height: 1; }
+    .goal-title { font-family: 'Bebas Neue', sans-serif; font-size: 15px; text-transform: uppercase; color: var(--cream); margin-bottom: 6px; }
+    .goal-desc { font-family: 'Noto Serif TC', serif; font-size: 13px; line-height: 1.9; color: rgba(240,244,255,0.55); }
+
+    /* CTA */
+    .cta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+    .cta-btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 28px; background: var(--neon); color: var(--bg); font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: all 0.3s; cursor: none; }
+    .cta-btn:hover { background: var(--cream); transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--neon); }
+    .cta-btn.outline { background: transparent; color: rgba(240,244,255,0.6); border: 1px solid rgba(255,255,255,0.15); }
+    .cta-btn.outline:hover { color: var(--cream); border-color: rgba(255,255,255,0.35); background: transparent; box-shadow: none; transform: none; }
+
+    .section-divider { display: flex; align-items: center; gap: 16px; margin: 48px 0; }
+    .divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent); }
+    .divider-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(240,244,255,0.2); white-space: nowrap; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    @media (max-width: 900px) {
+      .about-layout { grid-template-columns: 1fr; }
+      .about-left { position: relative; height: auto; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 40px 20px; }
+      .about-right { padding: 40px 20px 80px; }
+      nav { padding: 20px; }
+      .nav-links { display: none; }
+      .interest-grid { grid-template-columns: 1fr; }
+    }
+  
+    /* ---- NAV FIX: compact to fit all 6 links ---- */
+    nav {
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links {
+      gap: 24px !important;
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links a {
+      font-size: 11px !important;
+      letter-spacing: 0.08em !important;
+      white-space: nowrap;
+    }
+
+  
+    /* ---- TEXT RENDERING FIX ---- */
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    /* Isolate orbs so they don't affect text rendering */
+    .orb {
+      isolation: isolate;
+      will-change: auto !important;
+      transform: translateZ(0);
+    }
+    /* Prevent blur filter from creating new stacking context on text */
+    #starfield {
+      isolation: isolate;
+    }
+
+  
+    /* ---- HEADING SHARPNESS FIX ---- */
+    h1, h2, h3,
+    .hero-heading, .about-heading, .about-name,
+    .blog-title, .page-title, .skills-title,
+    .vision-heading, .post-title, .card-title,
+    .work-title, .chapter-title, .tl-title,
+    .nav-logo, .nav-links a {
+      -webkit-font-smoothing: subpixel-antialiased;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+
+  <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#4040ff,transparent);top:-80px;right:-80px;opacity:0.1;"></div>
+  <div class="orb" style="width:320px;height:320px;background:radial-gradient(circle,#7FFF3A,transparent);bottom:200px;left:-60px;opacity:0.08;"></div>
+  <div class="orb" style="width:260px;height:260px;background:radial-gradient(circle,#FF6B35,transparent);bottom:0;right:30%;opacity:0.07;"></div>
+
+  <nav>
+    <a class="nav-logo" href="index.html">Emma Thousand<span>.</span></a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="works.html">Works</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="now.html">Now</a></li>
+        <li><a href="reading.html">Reading</a></li>
+      </ul>
+  </nav>
+
+  <div class="about-layout">
+
+    <!-- LEFT: sticky identity -->
+    <aside class="about-left">
+      <div>
+        <div class="about-eyebrow">About me</div>
+        <h1 class="about-name">
+          Emma<br>
+          <span class="line-dim">Thou</span>sand
+          <span class="script">— 千華</span>
+        </h1>
+        <p class="about-role">
+          <strong>Technical Artist</strong> at a 3D software company<br>
+          台灣 · 24歲 · 跨領域探索者
+        </p>
+        <div class="about-tags">
+          <span class="tag active">Technical Artist</span>
+          <span class="tag">3D Generalist</span>
+          <span class="tag">Creative Technologist</span>
+          <span class="tag">Systems Thinker</span>
+          <span class="tag">Tech × Art</span>
+          <span class="tag">Curiosity-Driven</span>
+        </div>
+        <blockquote class="about-quote">
+          "未知不是終點，<br>是還沒命名的起點。"
+        </blockquote>
+      </div>
+      <div class="about-social">
+        <a class="social-link" href="mailto:ch9003131314@gmail.com">✉ Email</a>
+        <a class="social-link" href="https://www.linkedin.com/in/千華-黃-4b514926a" target="_blank">in LinkedIn</a>
+        <a class="social-link" href="https://github.com/EmmaHuang333" target="_blank">◈ GitHub</a>
+        <a class="social-link" href="https://www.instagram.com/emma_thousand_0313" target="_blank">◉ IG</a>
+      </div>
+    </aside>
+
+    <!-- RIGHT: scrollable story -->
+    <main class="about-right">
+
+      <!-- Story -->
+      <div class="section-block reveal">
+        <div class="section-label">Origin Story</div>
+        <h2 class="chapter-title">我是誰</h2>
+        <p class="story-p">
+          我叫<strong>千華</strong>，英文名 Emma Thousand。現在在台灣一間做 3D 軟體的公司擔任 Technical Artist——
+          這個職位的工作是住在工程師和藝術家之間的邊界上，<strong>用技術的語言說藝術的故事，用藝術的眼光問技術的問題</strong>。
+        </p>
+        <p class="story-p">
+          我的背景從商業設計出發，在大學主攻 3D 動畫，後來轉進科技業。這個轉換對我來說不是跳槽，
+          更像是意識到自己一直在做同一件事——<strong>試圖讓兩個看似不相關的系統對話</strong>。
+        </p>
+        <p class="story-p">
+          宇宙那麼大，我想都探索看看。這不只是隱喻。我真的對數學、哲學、HCI、AI、VR 都感興趣，
+          而且不打算選邊站——<em>我相信跨界本身就是一種方法論</em>。
+        </p>
+      </div>
+
+      <div class="section-divider"><div class="divider-line"></div><span class="divider-label">Chapter 02</span><div class="divider-line"></div></div>
+
+      <!-- Current work -->
+      <div class="section-block reveal reveal-delay-1">
+        <div class="section-label">Work</div>
+        <h2 class="chapter-title">現在在做什麼</h2>
+        <div class="timeline-item">
+          <div class="tl-year">Now</div>
+          <div class="tl-content">
+            <div class="tl-title">Technical Artist</div>
+            <div class="tl-sub">3D Software Development Company · Taiwan</div>
+            <p class="tl-desc">負責視覺品質檢測與回報、跨團隊技術溝通（工程師 ↔ 美術）、技術文件撰寫與工具研究。日常是幫兩種語言找到共同的錨點。</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year">Side</div>
+          <div class="tl-content">
+            <div class="tl-title">Building in Public</div>
+            <div class="tl-sub">Personal Projects · github.com/EmmaHuang333</div>
+            <p class="tl-desc">Shader 實驗、互動藝術原型、渲染研究。做中學，學中做。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><div class="divider-line"></div><span class="divider-label">Chapter 03</span><div class="divider-line"></div></div>
+
+      <!-- Interests -->
+      <div class="section-block reveal reveal-delay-2">
+        <div class="section-label">Interests</div>
+        <h2 class="chapter-title">著迷的東西</h2>
+        <div class="interest-grid">
+          <div class="interest-card">
+            <div class="interest-icon">◎</div>
+            <div class="interest-title">3D & Rendering</div>
+            <p class="interest-desc">Blender、Shader、幾何節點。把數學變成畫面的過程讓我著迷。</p>
+          </div>
+          <div class="interest-card">
+            <div class="interest-icon">⬡</div>
+            <div class="interest-title">Philosophy</div>
+            <p class="interest-desc">Nietzsche、Wittgenstein。語言的邊界是世界的邊界——這句話改變了我很多。</p>
+          </div>
+          <div class="interest-card">
+            <div class="interest-icon">◈</div>
+            <div class="interest-title">Mathematics</div>
+            <p class="interest-desc">邏輯、幾何、混沌。數學是我覺得最接近「純粹美」的東西。</p>
+          </div>
+          <div class="interest-card">
+            <div class="interest-icon">○</div>
+            <div class="interest-title">HCI & VR</div>
+            <p class="interest-desc">人如何感知虛擬空間？介面如何延伸感知？這些問題讓我想去讀研究所。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><div class="divider-line"></div><span class="divider-label">Chapter 04</span><div class="divider-line"></div></div>
+
+      <!-- Vision -->
+      <div class="section-block reveal reveal-delay-3">
+        <div class="section-label">Vision</div>
+        <h2 class="chapter-title">想去的方向</h2>
+        <div class="goal-row">
+          <div class="goal-num">01</div>
+          <div>
+            <div class="goal-title">Now · Creative Technologist</div>
+            <p class="goal-desc">在藝術與工程的交界處工作，用視覺說技術，用技術說故事。</p>
+          </div>
+        </div>
+        <div class="goal-row">
+          <div class="goal-num">02</div>
+          <div>
+            <div class="goal-title">Next · HCI Research</div>
+            <p class="goal-desc">探索人與技術如何真正相遇，讓介面不只是工具，而是感知的延伸。</p>
+          </div>
+        </div>
+        <div class="goal-row">
+          <div class="goal-num">03</div>
+          <div>
+            <div class="goal-title">Further · Civilization-Scale Creativity</div>
+            <p class="goal-desc">在 AI 與創造力的交會點上，設計真正改變人類體驗的東西。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"><div class="divider-line"></div><span class="divider-label">Let's connect</span><div class="divider-line"></div></div>
+
+      <!-- CTA -->
+      <div class="section-block reveal">
+        <div class="section-label">Contact</div>
+        <h2 class="chapter-title">聊聊吧</h2>
+        <p class="story-p">如果你對 3D、渲染、HCI、跨領域思考感興趣，或者只是想聊聊——歡迎找我。</p>
+        <div class="cta-row">
+          <a href="mailto:ch9003131314@gmail.com" class="cta-btn">✉ Send Email →</a>
+          <a href="https://www.linkedin.com/in/千華-黃-4b514926a" target="_blank" class="cta-btn outline">LinkedIn</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('starfield'), ctx = canvas.getContext('2d');
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    const stars = Array.from({length: 130}, () => ({ x: Math.random()*innerWidth, y: Math.random()*innerHeight, r: Math.random()*1.2+0.2, alpha: Math.random()*0.45+0.1, speed: Math.random()*0.012+0.003, phase: Math.random()*Math.PI*2 }));
+    (function draw() { ctx.clearRect(0,0,canvas.width,canvas.height); const t = Date.now()/1000; stars.forEach(s => { const a = s.alpha*(0.5+0.5*Math.sin(t*s.speed*60+s.phase)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(200,220,255,${a})`; ctx.fill(); }); requestAnimationFrame(draw); })();
+    const cursor = document.getElementById('cursor'), ring = document.getElementById('cursorRing');
+    let mx=0, my=0, rx=0, ry=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+    (function animRing() { rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
+    document.querySelectorAll('a').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width='18px'; cursor.style.height='18px'; ring.style.width='52px'; ring.style.height='52px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='32px'; ring.style.height='32px'; });
+    });
+    const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold: 0.1});
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>

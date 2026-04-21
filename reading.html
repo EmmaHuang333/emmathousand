@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-TW" style="background:#040b1a !important; color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reading — Emma Thousand</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root{--bg:#040b1a;--cream:#F0F4FF;--neon:#7FFF3A;--accent:#FF6B35;--purple:#B07EFF;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{background:#040b1a !important;color:#F0F4FF;font-family:'Space Mono',monospace;overflow-x:hidden;cursor:none;min-height:100vh;}
+    body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");pointer-events:none;z-index:100;opacity:0.35;mix-blend-mode:overlay;}
+    .cursor{width:10px;height:10px;background:var(--neon);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:exclusion;transition:width .2s,height .2s;}
+    .cursor-ring{width:32px;height:32px;border:1px solid rgba(127,255,58,0.4);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s;}
+    #starfield{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .orb{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0;}
+    .page-wrap{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:0 32px;}
+    nav{display:flex;align-items:center;justify-content:space-between;padding:28px 0;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:72px;}
+    .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.08em;text-transform:uppercase;color:var(--cream);text-decoration:none;}
+    .nav-logo span{color:var(--neon);}
+    .nav-links{display:flex;gap:32px;list-style:none;}
+    .nav-links a{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(240,244,255,0.6);text-decoration:none;transition:color 0.2s;}
+    .nav-links a:hover,.nav-links a.active{color:var(--neon);}
+
+    .page-header{margin-bottom:72px;position:relative;}
+    .page-eyebrow{font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--neon);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+    .page-eyebrow::before{content:'';width:28px;height:1px;background:var(--neon);}
+    .page-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,8vw,100px);text-transform:uppercase;line-height:0.9;}
+    .page-title .script{font-family:'Caveat',cursive;color:var(--neon);font-size:clamp(24px,4vw,52px);text-transform:none;display:block;margin-top:8px;}
+    .page-desc{font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(240,244,255,0.45);margin-top:24px;max-width:400px;line-height:1.9;}
+    .bg-num{position:absolute;right:0;top:0;font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,14vw,180px);color:rgba(255,255,255,0.025);line-height:1;user-select:none;pointer-events:none;}
+
+    /* CATEGORY */
+    .category-block{margin-bottom:72px;}
+    .cat-header{display:flex;align-items:baseline;gap:16px;margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,0.06);}
+    .cat-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,2.5vw,30px);text-transform:uppercase;letter-spacing:0.04em;}
+    .cat-title.philosophy{color:var(--purple);}
+    .cat-title.math{color:var(--neon);}
+    .cat-title.tech{color:var(--accent);}
+    .cat-title.other{color:rgba(240,244,255,0.5);}
+    .cat-count{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,244,255,0.25);}
+    .cat-script{font-family:'Caveat',cursive;font-size:clamp(16px,1.8vw,22px);color:rgba(240,244,255,0.3);}
+
+    /* BOOK GRID */
+    .book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+
+    .book-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:24px;display:flex;gap:20px;transition:transform 0.3s,border-color 0.3s;position:relative;overflow:hidden;}
+    .book-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,0.13);}
+    .book-card::before{content:'';position:absolute;inset:0;border-radius:16px;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,0.06),transparent 60%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;}
+
+    /* Color accent per category */
+    .book-card.philosophy{border-left:2px solid rgba(176,126,255,0.35);}
+    .book-card.math{border-left:2px solid rgba(127,255,58,0.35);}
+    .book-card.tech{border-left:2px solid rgba(255,107,53,0.35);}
+    .book-card.other{border-left:2px solid rgba(255,255,255,0.15);}
+
+    /* Spine / fake cover */
+    .book-spine{width:44px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:10px;text-transform:uppercase;writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:0.1em;padding:8px 0;}
+    .book-spine.philosophy{background:rgba(176,126,255,0.1);color:var(--purple);}
+    .book-spine.math{background:rgba(127,255,58,0.1);color:var(--neon);}
+    .book-spine.tech{background:rgba(255,107,53,0.1);color:var(--accent);}
+    .book-spine.other{background:rgba(255,255,255,0.05);color:rgba(240,244,255,0.35);}
+
+    .book-info{flex:1;min-width:0;}
+    .book-status{font-size:8px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:8px;display:inline-flex;align-items:center;gap:5px;}
+    .book-status::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+    .book-status.reading{color:var(--neon);}
+    .book-status.reading::before{background:var(--neon);box-shadow:0 0 4px var(--neon);}
+    .book-status.done{color:rgba(240,244,255,0.3);}
+    .book-status.done::before{background:rgba(240,244,255,0.3);}
+    .book-status.queue{color:rgba(240,244,255,0.2);}
+    .book-status.queue::before{background:rgba(240,244,255,0.2);}
+
+    .book-title{font-family:'Bebas Neue',sans-serif;font-size:14px;text-transform:uppercase;letter-spacing:0.04em;color:var(--cream);line-height:1.2;margin-bottom:4px;}
+    .book-author{font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:rgba(240,244,255,0.3);margin-bottom:10px;}
+    .book-note{font-family:'Caveat',cursive;font-size:14px;color:rgba(240,244,255,0.5);line-height:1.5;}
+
+    .section-divider{display:flex;align-items:center;gap:16px;margin:48px 0;}
+    .divider-line{flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(255,255,255,0.08),transparent);}
+    .divider-label{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(240,244,255,0.2);white-space:nowrap;}
+
+    footer{border-top:1px solid rgba(255,255,255,0.05);padding:32px 0 48px;display:flex;align-items:center;justify-content:space-between;}
+    .footer-back{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(240,244,255,0.4);text-decoration:none;transition:color 0.2s;}
+    .footer-back:hover{color:var(--neon);}
+    .footer-note{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(240,244,255,0.2);}
+    .footer-note span{font-family:'Caveat',cursive;color:var(--neon);font-size:14px;}
+
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity 0.65s ease,transform 0.65s ease;}
+    .reveal.visible{opacity:1;transform:translateY(0);}
+    .reveal-delay-1{transition-delay:0.08s;}
+    .reveal-delay-2{transition-delay:0.16s;}
+    .reveal-delay-3{transition-delay:0.24s;}
+    .reveal-delay-4{transition-delay:0.32s;}
+
+    @media(max-width:768px){.page-wrap{padding:0 20px;}.nav-links{display:none;}.book-grid{grid-template-columns:1fr;}footer{flex-direction:column;gap:16px;text-align:center;}}
+  
+    /* Noto Serif TC: ONLY for Chinese text areas, not English script accents */
+    .about-quote,
+    .pull-quote p,
+    .log-body p,
+    .book-note,
+    .cat-script,
+    .page-desc,
+    .blog-desc,
+    .hero-desc,
+    .card-desc,
+    .card-excerpt,
+    .goal-desc,
+    .vision-text,
+    .work-desc,
+    .next-post-excerpt,
+    .article-body p,
+    .article-lead {
+      font-family: 'Noto Serif TC', serif;
+    }
+    /* Body text size boost */
+    body { font-size: 14px; }
+    .card-desc, .work-desc, .page-desc, .blog-desc, .hero-desc,
+    .card-excerpt, .goal-desc, .vision-text, .footer-note,
+    .meta-item, .card-date, .book-author, .log-date,
+    .post-footer-label, .next-post-excerpt {
+      font-size: 13px !important;
+      line-height: 2 !important;
+    }
+    /* Label / tag text */
+    .card-tag, .work-tag, .status-tag, .book-status,
+    .toc-item a, .filter-btn, .filter-row .filter-btn,
+    .nav-tag, .hero-eyebrow, .section-label, .page-eyebrow,
+    .blog-eyebrow, .divider-label, .card-read, .post-back,
+    .work-year, .card-date { font-size: 11px !important; }
+    /* Nav links */
+    .nav-links a { font-size: 13px !important; }
+    /* TOC */
+    .toc-item a { font-size: 12px !important; }
+    /* Skill items */
+    .skill-item { font-size: 13px !important; }
+    /* About cards body */
+    .card-desc { font-size: 13px !important; }
+    /* Article body */
+    .article-lead { font-size: 15px !important; }
+    .article-body p { font-size: 14px !important; }
+    /* Book note */
+    .book-note { font-size: 15px !important; }
+    /* Now log body */
+    .log-body p { font-size: 14px !important; }
+
+  
+    /* ---- NAV FIX: compact to fit all 6 links ---- */
+    nav {
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links {
+      gap: 24px !important;
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links a {
+      font-size: 11px !important;
+      letter-spacing: 0.08em !important;
+      white-space: nowrap;
+    }
+
+  
+    /* ---- TEXT RENDERING FIX ---- */
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    /* Isolate orbs so they don't affect text rendering */
+    .orb {
+      isolation: isolate;
+      will-change: auto !important;
+      transform: translateZ(0);
+    }
+    /* Prevent blur filter from creating new stacking context on text */
+    #starfield {
+      isolation: isolate;
+    }
+
+  
+    /* ---- HEADING SHARPNESS FIX ---- */
+    h1, h2, h3,
+    .hero-heading, .about-heading, .about-name,
+    .blog-title, .page-title, .skills-title,
+    .vision-heading, .post-title, .card-title,
+    .work-title, .chapter-title, .tl-title,
+    .nav-logo, .nav-links a {
+      -webkit-font-smoothing: subpixel-antialiased;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+  <div class="orb" style="width:420px;height:420px;background:radial-gradient(circle,#9B5CF6,transparent);top:-80px;right:-60px;opacity:0.1;"></div>
+  <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#7FFF3A,transparent);bottom:300px;left:-40px;opacity:0.07;"></div>
+  <div class="orb" style="width:250px;height:250px;background:radial-gradient(circle,#FF6B35,transparent);bottom:100px;right:15%;opacity:0.07;"></div>
+
+  <div class="page-wrap">
+    <nav>
+      <a class="nav-logo" href="index.html">Emma Thousand<span>.</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="works.html">Works</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="now.html">Now</a></li>
+        <li><a href="reading.html" class="active">Reading</a></li>
+      </ul>
+    </nav>
+
+    <header class="page-header reveal">
+      <div class="bg-num">∞</div>
+      <div class="page-eyebrow">Bookshelf</div>
+      <h1 class="page-title">
+        Reading
+        <span class="script">— 還在消化的東西</span>
+      </h1>
+      <p class="page-desc">
+        讀過的、在讀的、想讀的。<br>
+        沒有評分，只有一句最誠實的感想。
+      </p>
+    </header>
+
+    <!-- PHILOSOPHY -->
+    <div class="category-block reveal">
+      <div class="cat-header">
+        <span class="cat-title philosophy">Philosophy</span>
+        <span class="cat-script">語言、意識、存在</span>
+        <span class="cat-count">4 本</span>
+      </div>
+      <div class="book-grid">
+        <div class="book-card philosophy">
+          <div class="book-spine philosophy">Wittgenstein</div>
+          <div class="book-info">
+            <span class="book-status reading">In Progress</span>
+            <div class="book-title">Philosophical Investigations</div>
+            <div class="book-author">Ludwig Wittgenstein</div>
+            <div class="book-note">"意義不在語言裡，在使用裡。"<br>讀得很慢，但每頁都有東西。</div>
+          </div>
+        </div>
+        <div class="book-card philosophy">
+          <div class="book-spine philosophy">Nietzsche</div>
+          <div class="book-info">
+            <span class="book-status done">Read</span>
+            <div class="book-title">The Birth of Tragedy</div>
+            <div class="book-author">Friedrich Nietzsche</div>
+            <div class="book-note">阿波羅 vs 狄俄尼索斯讓我想到技術 vs 藝術。讀完想做很多東西。</div>
+          </div>
+        </div>
+        <div class="book-card philosophy">
+          <div class="book-spine philosophy">Nietzsche</div>
+          <div class="book-info">
+            <span class="book-status queue">Want to Read</span>
+            <div class="book-title">Thus Spoke Zarathustra</div>
+            <div class="book-author">Friedrich Nietzsche</div>
+            <div class="book-note">等把悲劇的誕生消化完再讀。</div>
+          </div>
+        </div>
+        <div class="book-card philosophy">
+          <div class="book-spine philosophy">Russell</div>
+          <div class="book-info">
+            <span class="book-status queue">Want to Read</span>
+            <div class="book-title">Principia Mathematica</div>
+            <div class="book-author">Whitehead & Russell</div>
+            <div class="book-note">感覺是那種要花一整年慢慢啃的書。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATHEMATICS -->
+    <div class="category-block reveal reveal-delay-1">
+      <div class="cat-header">
+        <span class="cat-title math">Mathematics</span>
+        <span class="cat-script">邏輯、結構、美</span>
+        <span class="cat-count">3 本</span>
+      </div>
+      <div class="book-grid">
+        <div class="book-card math">
+          <div class="book-spine math">Hofstadter</div>
+          <div class="book-info">
+            <span class="book-status done">Read</span>
+            <div class="book-title">Gödel, Escher, Bach</div>
+            <div class="book-author">Douglas Hofstadter</div>
+            <div class="book-note">讀完覺得世界觀被重組了一次。自我指涉的系統讓我著迷。</div>
+          </div>
+        </div>
+        <div class="book-card math">
+          <div class="book-spine math">Euclid</div>
+          <div class="book-info">
+            <span class="book-status reading">In Progress</span>
+            <div class="book-title">Elements</div>
+            <div class="book-author">Euclid</div>
+            <div class="book-note">在讀中文譯本。幾何的美麗在於從極少的假設能推出這麼多。</div>
+          </div>
+        </div>
+        <div class="book-card math">
+          <div class="book-spine math">Stewart</div>
+          <div class="book-info">
+            <span class="book-status queue">Want to Read</span>
+            <div class="book-title">Does God Play Dice?</div>
+            <div class="book-author">Ian Stewart</div>
+            <div class="book-note">混沌理論入門。和 shader noise 有關係的東西都想讀。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TECH -->
+    <div class="category-block reveal reveal-delay-2">
+      <div class="cat-header">
+        <span class="cat-title tech">Technical</span>
+        <span class="cat-script">渲染、圖學、工具</span>
+        <span class="cat-count">3 本</span>
+      </div>
+      <div class="book-grid">
+        <div class="book-card tech">
+          <div class="book-spine tech">Akenine</div>
+          <div class="book-info">
+            <span class="book-status reading">In Progress</span>
+            <div class="book-title">Real-Time Rendering</div>
+            <div class="book-author">Akenine-Möller et al.</div>
+            <div class="book-note">圖學的聖經。我把它當字典查，不是從頭讀到尾。</div>
+          </div>
+        </div>
+        <div class="book-card tech">
+          <div class="book-spine tech">Shirley</div>
+          <div class="book-info">
+            <span class="book-status done">Read</span>
+            <div class="book-title">Ray Tracing in One Weekend</div>
+            <div class="book-author">Peter Shirley</div>
+            <div class="book-note">三天讀完。用 C++ 寫出第一個 ray tracer 的感覺很magical。</div>
+          </div>
+        </div>
+        <div class="book-card tech">
+          <div class="book-spine tech">Norman</div>
+          <div class="book-info">
+            <span class="book-status queue">Want to Read</span>
+            <div class="book-title">The Design of Everyday Things</div>
+            <div class="book-author">Don Norman</div>
+            <div class="book-note">HCI 的起點。一直想讀，一直拖。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OTHER -->
+    <div class="category-block reveal reveal-delay-3">
+      <div class="cat-header">
+        <span class="cat-title other">Other</span>
+        <span class="cat-script">什麼都有一點</span>
+        <span class="cat-count">2 本</span>
+      </div>
+      <div class="book-grid">
+        <div class="book-card other">
+          <div class="book-spine other">Sagan</div>
+          <div class="book-info">
+            <span class="book-status done">Read</span>
+            <div class="book-title">Cosmos</div>
+            <div class="book-author">Carl Sagan</div>
+            <div class="book-note">讀完覺得自己很小，又同時覺得很幸運能存在。</div>
+          </div>
+        </div>
+        <div class="book-card other">
+          <div class="book-spine other">Le Guin</div>
+          <div class="book-info">
+            <span class="book-status queue">Want to Read</span>
+            <div class="book-title">The Left Hand of Darkness</div>
+            <div class="book-author">Ursula K. Le Guin</div>
+            <div class="book-note">有人說這本改變了他們對「分類」這件事的看法。很期待。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-divider">
+      <div class="divider-line"></div>
+      <span class="divider-label">持續更新中</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <footer>
+      <a class="footer-back" href="index.html">← Back to Base</a>
+      <div class="footer-note">Emma Thousand — Bookshelf <span>♡</span></div>
+    </footer>
+  </div>
+
+  <script>
+    const canvas=document.getElementById('starfield'),ctx=canvas.getContext('2d');
+    function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
+    resize();window.addEventListener('resize',resize);
+    const stars=Array.from({length:120},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.1+0.2,alpha:Math.random()*0.45+0.1,speed:Math.random()*0.012+0.003,phase:Math.random()*Math.PI*2}));
+    (function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);const t=Date.now()/1000;stars.forEach(s=>{const a=s.alpha*(0.5+0.5*Math.sin(t*s.speed*60+s.phase));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(200,220,255,${a})`;ctx.fill();});requestAnimationFrame(draw);})();
+    const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+    (function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
+    document.querySelectorAll('a').forEach(el=>{
+      el.addEventListener('mouseenter',()=>{cursor.style.width='18px';cursor.style.height='18px';ring.style.width='52px';ring.style.height='52px';});
+      el.addEventListener('mouseleave',()=>{cursor.style.width='10px';cursor.style.height='10px';ring.style.width='32px';ring.style.height='32px';});
+    });
+    const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.1});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+  </script>
+</body>
+</html>

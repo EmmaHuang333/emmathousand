@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-TW" style="background:#040b1a !important; color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transmission Log — Emma Thousand</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #040b1a;
+      --cream: #F0F4FF;
+      --neon: #7FFF3A;
+      --accent: #FF6B35;
+      --purple: #B07EFF;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #040b1a !important; color: #F0F4FF; font-family: 'Space Mono', monospace; overflow-x: hidden; cursor: none; min-height: 100vh; }
+    body::after { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"); pointer-events: none; z-index: 100; opacity: 0.35; mix-blend-mode: overlay; }
+
+    /* CURSOR */
+    .cursor { width: 10px; height: 10px; background: var(--neon); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: exclusion; transition: width .2s, height .2s; }
+    .cursor-ring { width: 32px; height: 32px; border: 1px solid rgba(127,255,58,0.4); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
+
+    /* STARFIELD */
+    #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* ORBS */
+    .orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+
+    /* LAYOUT */
+    .page-wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+
+    /* NAV */
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 28px 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 72px; }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cream); text-decoration: none; }
+    .nav-logo span { color: var(--neon); }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(240,244,255,0.6); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--neon); }
+
+    /* HEADER */
+    .blog-header { margin-bottom: 64px; position: relative; overflow: hidden; }
+    .blog-eyebrow { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--neon); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+    .blog-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--neon); }
+    .blog-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 8vw, 110px); text-transform: uppercase; line-height: 0.9; letter-spacing: -0.01em; }
+    .blog-title .script { font-family: 'Caveat', cursive; color: var(--neon); font-size: clamp(28px, 4.5vw, 64px); text-transform: none; display: block; margin-top: 8px; }
+    .blog-desc { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(240,244,255,0.5); margin-top: 28px; max-width: 380px; line-height: 1.9; }
+    .post-count { position: absolute; right: 0; top: 0; font-family: 'Bebas Neue', sans-serif; font-size: clamp(80px, 14vw, 180px); color: rgba(255,255,255,0.025); line-height: 1; user-select: none; pointer-events: none; }
+
+    /* FILTER */
+    .filter-row { display: flex; gap: 10px; margin-bottom: 48px; flex-wrap: wrap; }
+    .filter-btn { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; padding: 7px 16px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.12); background: transparent; color: rgba(240,244,255,0.5); cursor: none; transition: all 0.2s; }
+    .filter-btn:hover { border-color: rgba(255,255,255,0.3); color: var(--cream); }
+    .filter-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(127,255,58,0.06); }
+    .filter-btn.f-essay.active { border-color: var(--accent); color: var(--accent); background: rgba(255,107,53,0.06); }
+
+    /* MAGAZINE GRID */
+    .magazine-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; margin-bottom: 80px; }
+
+    .post-card { grid-column: span 4; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 30px; text-decoration: none; color: inherit; display: flex; flex-direction: column; justify-content: space-between; min-height: 220px; position: relative; overflow: hidden; transition: transform 0.3s, background 0.3s, border-color 0.3s; cursor: none; }
+    .post-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.055); border-color: rgba(255,255,255,0.15); }
+    .post-card.wide  { grid-column: span 8; }
+    .post-card.hero  { grid-column: span 8; min-height: 360px; background: rgba(127,255,58,0.03); border-color: rgba(127,255,58,0.12); }
+    .post-card.hero:hover { background: rgba(127,255,58,0.06); border-color: rgba(127,255,58,0.22); }
+    .post-card.half  { grid-column: span 6; }
+    .post-card.full  { grid-column: span 12; }
+
+    /* accent line */
+    .card-line { position: absolute; bottom: 0; left: 0; height: 2px; width: 0; transition: width 0.4s ease; }
+    .post-card:hover .card-line { width: 100%; }
+    .post-card.tech .card-line { background: var(--neon); }
+    .post-card.essay .card-line { background: var(--accent); }
+
+    /* glass sheen */
+    .post-card::before { content: ''; position: absolute; inset: 0; border-radius: 20px; padding: 1px; background: linear-gradient(135deg, rgba(255,255,255,0.07), transparent 50%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
+
+    .card-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .card-tag { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; padding: 4px 10px; border-radius: 10px; }
+    .card-tag.tech { background: rgba(127,255,58,0.1); color: var(--neon); border: 1px solid rgba(127,255,58,0.2); }
+    .card-tag.essay { background: rgba(255,107,53,0.1); color: var(--accent); border: 1px solid rgba(255,107,53,0.2); }
+    .card-date { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(240,244,255,0.3); }
+
+    .card-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(17px, 2vw, 26px); text-transform: uppercase; line-height: 1.05; color: var(--cream); margin-bottom: 12px; }
+    .post-card.hero .card-title { font-size: clamp(26px, 3.5vw, 46px); }
+    .card-excerpt { font-size: 11px; line-height: 1.85; color: rgba(240,244,255,0.52); letter-spacing: 0.03em; }
+
+    .card-bottom { margin-top: 22px; display: flex; align-items: center; justify-content: space-between; }
+    .card-read { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(240,244,255,0.28); display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+    .post-card:hover .card-read { color: rgba(240,244,255,0.6); }
+    .card-read::after { content: '→'; transition: transform 0.2s; }
+    .post-card:hover .card-read::after { transform: translateX(4px); }
+    .card-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: rgba(255,255,255,0.04); line-height: 1; user-select: none; }
+
+    /* DIVIDER */
+    .section-divider { display: flex; align-items: center; gap: 16px; margin: 48px 0; }
+    .divider-line { flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent); }
+    .divider-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(240,244,255,0.25); white-space: nowrap; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid rgba(255,255,255,0.05); padding: 32px 0 48px; display: flex; align-items: center; justify-content: space-between; }
+    .footer-back { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(240,244,255,0.4); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+    .footer-back:hover { color: var(--neon); }
+    .footer-note { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(240,244,255,0.2); }
+    .footer-note span { font-family: 'Caveat', cursive; color: var(--neon); font-size: 14px; }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.16s; }
+    .reveal-delay-3 { transition-delay: 0.24s; }
+    .reveal-delay-4 { transition-delay: 0.32s; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .page-wrap { padding: 0 20px; }
+      .nav-links { display: none; }
+      .post-card, .post-card.wide, .post-card.hero, .post-card.half, .post-card.full { grid-column: span 12; }
+      .post-card.hero { min-height: 280px; }
+      .magazine-grid { gap: 14px; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+    }
+  
+    /* Noto Serif TC: ONLY for Chinese text areas, not English script accents */
+    .about-quote,
+    .pull-quote p,
+    .log-body p,
+    .book-note,
+    .cat-script,
+    .page-desc,
+    .blog-desc,
+    .hero-desc,
+    .card-desc,
+    .card-excerpt,
+    .goal-desc,
+    .vision-text,
+    .work-desc,
+    .next-post-excerpt,
+    .article-body p,
+    .article-lead {
+      font-family: 'Noto Serif TC', serif;
+    }
+    /* Body text size boost */
+    body { font-size: 14px; }
+    .card-desc, .work-desc, .page-desc, .blog-desc, .hero-desc,
+    .card-excerpt, .goal-desc, .vision-text, .footer-note,
+    .meta-item, .card-date, .book-author, .log-date,
+    .post-footer-label, .next-post-excerpt {
+      font-size: 13px !important;
+      line-height: 2 !important;
+    }
+    /* Label / tag text */
+    .card-tag, .work-tag, .status-tag, .book-status,
+    .toc-item a, .filter-btn, .filter-row .filter-btn,
+    .nav-tag, .hero-eyebrow, .section-label, .page-eyebrow,
+    .blog-eyebrow, .divider-label, .card-read, .post-back,
+    .work-year, .card-date { font-size: 11px !important; }
+    /* Nav links */
+    .nav-links a { font-size: 13px !important; }
+    /* TOC */
+    .toc-item a { font-size: 12px !important; }
+    /* Skill items */
+    .skill-item { font-size: 13px !important; }
+    /* About cards body */
+    .card-desc { font-size: 13px !important; }
+    /* Article body */
+    .article-lead { font-size: 15px !important; }
+    .article-body p { font-size: 14px !important; }
+    /* Book note */
+    .book-note { font-size: 15px !important; }
+    /* Now log body */
+    .log-body p { font-size: 14px !important; }
+
+  
+    /* ---- NAV FIX: compact to fit all 6 links ---- */
+    nav {
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links {
+      gap: 24px !important;
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links a {
+      font-size: 11px !important;
+      letter-spacing: 0.08em !important;
+      white-space: nowrap;
+    }
+
+  
+    /* ---- TEXT RENDERING FIX ---- */
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    /* Isolate orbs so they don't affect text rendering */
+    .orb {
+      isolation: isolate;
+      will-change: auto !important;
+      transform: translateZ(0);
+    }
+    /* Prevent blur filter from creating new stacking context on text */
+    #starfield {
+      isolation: isolate;
+    }
+
+  
+    /* ---- HEADING SHARPNESS FIX ---- */
+    h1, h2, h3,
+    .hero-heading, .about-heading, .about-name,
+    .blog-title, .page-title, .skills-title,
+    .vision-heading, .post-title, .card-title,
+    .work-title, .chapter-title, .tl-title,
+    .nav-logo, .nav-links a {
+      -webkit-font-smoothing: subpixel-antialiased;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+
+  <div class="orb" style="width:480px;height:480px;background:radial-gradient(circle,#4040ff,transparent);top:-80px;right:-80px;opacity:0.1;"></div>
+  <div class="orb" style="width:320px;height:320px;background:radial-gradient(circle,#7FFF3A,transparent);bottom:300px;left:-60px;opacity:0.08;"></div>
+  <div class="orb" style="width:280px;height:280px;background:radial-gradient(circle,#FF6B35,transparent);bottom:0;right:20%;opacity:0.07;"></div>
+
+  <div class="page-wrap">
+
+    <nav>
+      <a class="nav-logo" href="index.html">Emma Thousand<span>.</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="works.html">Works</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="now.html">Now</a></li>
+        <li><a href="reading.html">Reading</a></li>
+      </ul>
+    </nav>
+
+    <header class="blog-header reveal">
+      <div class="post-count">06</div>
+      <div class="blog-eyebrow">Transmission Log</div>
+      <h1 class="blog-title">
+        Field<br>Notes
+        <span class="script">— 來自探索途中</span>
+      </h1>
+      <p class="blog-desc">
+        技術與人文之間的漂流紀錄。<br>
+        思考、實驗、還有還沒命名的東西。
+      </p>
+    </header>
+
+    <div class="filter-row reveal reveal-delay-1">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn f-tech" data-filter="tech">Technical</button>
+      <button class="filter-btn f-essay" data-filter="essay">隨筆</button>
+    </div>
+
+    <div class="magazine-grid">
+
+      <!-- HERO card -->
+      <a href="post.html" class="post-card hero tech reveal">
+        <div>
+          <div class="card-meta">
+            <span class="card-tag tech">Technical</span>
+            <span class="card-date">2025.04.18</span>
+          </div>
+          <div class="card-title">當 Shader 開始<br>說故事</div>
+          <p class="card-excerpt">
+            一段 GLSL 程式碼怎麼從數學方程式變成有溫度的畫面。<br>
+            關於渲染、感知，和「美」這件事的技術本質。
+          </p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-read">Read</span>
+          <span class="card-num">01</span>
+        </div>
+        <div class="card-line"></div>
+      </a>
+
+      <!-- Tall card -->
+      <a href="post.html" class="post-card essay reveal reveal-delay-1">
+        <div>
+          <div class="card-meta">
+            <span class="card-tag essay">隨筆</span>
+            <span class="card-date">2025.04.10</span>
+          </div>
+          <div class="card-title">Wittgenstein<br>說的那條界線</div>
+          <p class="card-excerpt">
+            語言的邊界就是世界的邊界。<br>
+            那跨領域是在越界，還是在擴張語言？
+          </p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-read">Read</span>
+          <span class="card-num">02</span>
+        </div>
+        <div class="card-line"></div>
+      </a>
+
+      <!-- 3 equal cards -->
+      <a href="post.html" class="post-card tech reveal reveal-delay-1">
+        <div>
+          <div class="card-meta">
+            <span class="card-tag tech">Technical</span>
+            <span class="card-date">2025.03.28</span>
+          </div>
+          <div class="card-title">Geometry Nodes<br>作為思考工具</div>
+          <p class="card-excerpt">節點編輯器不只是做特效，它是一種視覺化邏輯思維的方式。</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-read">Read</span>
+          <span class="card-num">03</span>
+        </div>
+        <div class="card-line"></div>
+      </a>
+
+      <a href="post.html" class="post-card essay reveal reveal-delay-2">
+        <div>
+          <div class="card-meta">
+            <span class="card-tag essay">隨筆</span>
+            <span class="card-date">2025.03.15</span>
+          </div>
+          <div class="card-title">Technical Artist<br>是什麼身份</div>
+          <p class="card-excerpt">不是工程師，不完全是藝術家。活在兩個語言之間是天賦還是詛咒？</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-read">Read</span>
+          <span class="card-num">04</span>
+        </div>
+        <div class="card-line"></div>
+      </a>
+
+      <a href="post.html" class="post-card tech reveal reveal-delay-3">
+        <div>
+          <div class="card-meta">
+            <span class="card-tag tech">Technical</span>
+            <span class="card-date">2025.02.22</span>
+          </div>
+          <div class="card-title">VR 裡的<br>空間感知</div>
+          <p class="card-excerpt">當身體在虛擬空間中移動，大腦到底在相信什麼？</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-read">Read</span>
+          <span class="card-num">05</span>
+        </div>
+        <div class="card-line"></div>
+      </a>
+
+      <!-- Wide card -->
+      <a href="post.html" class="post-card wide essay reveal reveal-delay-1">
+        <div>
+          <div class="card-meta">
+            <span class="card-tag essay">隨筆</span>
+            <span class="card-date">2025.02.05</span>
+          </div>
+          <div class="card-title">未知不是終點，<br>是還沒命名的起點</div>
+          <p class="card-excerpt">關於跨領域這件事。數學的嚴謹、哲學的開放、藝術的感知——它們之間沒有牆，只有還沒被走過的路徑。</p>
+        </div>
+        <div class="card-bottom">
+          <span class="card-read">Read</span>
+          <span class="card-num">06</span>
+        </div>
+        <div class="card-line"></div>
+      </a>
+
+    </div>
+
+    <div class="section-divider">
+      <div class="divider-line"></div>
+      <span class="divider-label">End of current transmissions</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <footer>
+      <a class="footer-back" href="index.html">← Back to Base</a>
+      <div class="footer-note">Emma Thousand — Field Notes <span>♡</span></div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Starfield
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    const stars = Array.from({length:140}, () => ({ x: Math.random()*innerWidth, y: Math.random()*innerHeight, r: Math.random()*1.2+0.2, alpha: Math.random()*0.5+0.1, speed: Math.random()*0.015+0.003, phase: Math.random()*Math.PI*2 }));
+    (function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const t = Date.now()/1000;
+      stars.forEach(s => { const a = s.alpha*(0.5+0.5*Math.sin(t*s.speed*60+s.phase)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(200,220,255,${a})`; ctx.fill(); });
+      requestAnimationFrame(draw);
+    })();
+
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+    (function animRing() { rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
+    document.querySelectorAll('a,button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width='18px'; cursor.style.height='18px'; ring.style.width='52px'; ring.style.height='52px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='32px'; ring.style.height='32px'; });
+    });
+
+    // Reveal
+    const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:0.1});
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+    // Filter
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        document.querySelectorAll('.post-card').forEach(card => {
+          const match = f === 'all' || card.classList.contains(f);
+          card.style.opacity = match ? '1' : '0.15';
+          card.style.pointerEvents = match ? 'auto' : 'none';
+          card.style.transform = match ? '' : 'scale(0.97)';
+        });
+      });
+    });
+  </script>
+</body>
+</html>

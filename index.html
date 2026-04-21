@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="zh-TW" style="background:#040b1a !important; color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emma — 跨領域探索者</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================
+       VARIABLES & RESET
+    ============================================ */
+    :root {
+      --bg: #040b1a;
+      --cream: #F0F4FF;
+      --neon: #7FFF3A;
+      --neon-dim: rgba(127,255,58,0.15);
+      --accent: #FF6B35;
+      --glass-bg: rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.18);
+      --purple: #B07EFF;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      background: #040b1a !important;
+      color-scheme: dark;
+    }
+
+    body {
+      background: #040b1a !important;
+      color: #F0F4FF !important;
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+      cursor: none;
+      min-height: 100vh;
+    }
+
+    /* ============================================
+       CUSTOM CURSOR
+    ============================================ */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--neon);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+      mix-blend-mode: exclusion;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(127,255,58,0.5);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease, width 0.3s ease, height 0.3s ease;
+    }
+
+    /* ============================================
+       GLASS CARDS — stronger for any bg
+    ============================================ */
+    .glass {
+      background: rgba(4, 11, 26, 0.75) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.12),
+        0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    /* ============================================
+       CARD TEXT — always light on dark glass
+    ============================================ */
+    .card-title  { color: #F0F4FF !important; }
+    .card-desc   { color: rgba(240,244,255,0.85) !important; }
+    .card-num    { color: rgba(255,255,255,0.12) !important; }
+
+    /* ============================================
+       SKILL CATEGORY CARDS
+    ============================================ */
+    .skill-category {
+      background: rgba(4, 11, 26, 0.75) !important;
+      border: 1px solid rgba(255,255,255,0.15) !important;
+    }
+    .skill-item { color: rgba(240,244,255,0.9) !important; }
+
+    /* ============================================
+       GOAL ITEMS
+    ============================================ */
+    .goal-title { color: #F0F4FF !important; }
+    .goal-desc  { color: rgba(240,244,255,0.8) !important; }
+    .goal-num   { color: rgba(255,255,255,0.22) !important; }
+
+    /* ============================================
+       HERO ELEMENTS
+    ============================================ */
+    .hero-heading   { color: #F0F4FF !important; }
+    .hero-desc      { color: rgba(240,244,255,0.9) !important; }
+    .status-dot     { color: rgba(240,244,255,0.85) !important; }
+    .hero-eyebrow   { color: var(--neon) !important; }
+    .annotation     { color: rgba(240,244,255,0.8) !important; }
+
+    /* ============================================
+       ABOUT SECTION
+    ============================================ */
+    .about-heading  { color: #F0F4FF !important; }
+    .about-quote    { color: rgba(240,244,255,0.82) !important; }
+    .section-label  { color: rgba(240,244,255,0.75) !important; }
+    .tag            { color: rgba(240,244,255,0.88) !important; background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.2) !important; }
+
+    /* ============================================
+       SKILLS SECTION
+    ============================================ */
+    .skills-title    { color: #F0F4FF !important; }
+    .orbit-center    { color: var(--neon) !important; }
+
+    /* ============================================
+       VISION SECTION
+    ============================================ */
+    .vision-heading  { color: #F0F4FF !important; }
+    .vision-text     { color: rgba(240,244,255,0.88) !important; }
+
+    /* ============================================
+       NAV
+    ============================================ */
+    .nav-logo        { color: #F0F4FF !important; }
+    .nav-tag         { color: rgba(240,244,255,0.8) !important; border-color: rgba(255,255,255,0.25) !important; }
+
+    /* ============================================
+       FOOTER & DIVIDERS
+    ============================================ */
+    .footer-logo     { color: rgba(240,244,255,0.7) !important; }
+    .footer-note     { color: rgba(240,244,255,0.6) !important; }
+    .divider-label   { color: rgba(240,244,255,0.6) !important; }
+    .divider-line    { background: linear-gradient(to right, transparent, rgba(255,255,255,0.22), transparent) !important; }
+    .hero-scroll     { color: rgba(240,244,255,0.7) !important; }
+    .nav-links a     { color: rgba(240,244,255,0.88) !important; }
+
+    /* ============================================
+       NOISE TEXTURE OVERLAY
+    ============================================ */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.4;
+      mix-blend-mode: overlay;
+    }
+
+    /* ============================================
+       STARFIELD
+    ============================================ */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ============================================
+       SECTION BASE
+    ============================================ */
+    section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    /* ============================================
+       SECTION 1: HERO
+    ============================================ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    /* Orbiting gradient orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #4040ff, transparent);
+      top: -100px; right: -100px;
+      animation: drift1 18s ease-in-out infinite alternate;
+    }
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #7FFF3A, transparent);
+      bottom: 100px; left: -80px;
+      animation: drift2 14s ease-in-out infinite alternate;
+    }
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #FF6B35, transparent);
+      top: 40%; left: 35%;
+      animation: drift3 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift1 { from { transform: translate(0,0) scale(1); } to { transform: translate(-60px,80px) scale(1.15); } }
+    @keyframes drift2 { from { transform: translate(0,0) scale(1); } to { transform: translate(40px,-50px) scale(1.1); } }
+    @keyframes drift3 { from { transform: translate(0,0) scale(1); } to { transform: translate(-30px,40px) scale(0.9); } }
+
+    /* NAV */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 40px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--cream);
+    }
+    .nav-logo span {
+      color: var(--neon);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.85);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -4px;
+      height: 1px; width: 0;
+      background: var(--neon);
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-tag {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.75);
+      padding: 6px 14px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+    }
+
+    /* HERO CONTENT */
+    .hero-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 40px 40px;
+      position: relative;
+      z-index: 5;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--neon);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 32px; height: 1px;
+      background: var(--neon);
+    }
+
+    .hero-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(52px, 9vw, 130px);
+      line-height: 0.92;
+      text-transform: uppercase;
+      letter-spacing: -0.01em;
+      color: var(--cream);
+      position: relative;
+      max-width: 900px;
+    }
+
+    .hero-heading .accent-script {
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      color: var(--neon);
+      font-size: clamp(36px, 5.5vw, 80px);
+      text-transform: none;
+      display: block;
+      line-height: 1;
+      mix-blend-mode: normal;
+      margin-left: 8px;
+    }
+
+    .hero-heading .line-dim {
+      color: rgba(237,242,255,0.2);
+    }
+
+    /* Floating annotation */
+    .annotation {
+      position: absolute;
+      right: -20px;
+      top: 20px;
+      font-family: 'Caveat', cursive;
+      font-size: 16px;
+      color: rgba(240,244,255,0.7);
+      transform: rotate(8deg);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .annotation::before {
+      content: '← ';
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      margin-top: 48px;
+      display: flex;
+      align-items: flex-end;
+      gap: 80px;
+    }
+
+    .hero-desc {
+      font-size: 12px;
+      line-height: 1.8;
+      color: rgba(240,244,255,0.85);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      max-width: 280px;
+    }
+
+    .hero-scroll {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.6);
+      margin-left: auto;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, rgba(240,244,255,0.5));
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    /* HERO BOTTOM BAR */
+    .hero-bottom {
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      z-index: 5;
+    }
+
+    .status-dot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.8);
+    }
+    .status-dot::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--neon);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neon);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .social-row {
+      display: flex;
+      gap: 12px;
+    }
+    .social-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(240,244,255,0.9);
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s;
+      cursor: none;
+    }
+    .social-btn:hover {
+      background: var(--neon-dim);
+      border-color: var(--neon);
+      color: var(--neon);
+    }
+
+    /* ============================================
+       SECTION 2: ABOUT
+    ============================================ */
+    #about {
+      min-height: auto;
+      display: flex;
+      align-items: center;
+      padding: 60px 0 80px;
+      overflow: hidden;
+    }
+
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about-left {
+      position: relative;
+      background: rgba(4, 11, 26, 0.72);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 36px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.7);
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::before {
+      content: '';
+      width: 20px; height: 1px;
+      background: rgba(240,244,255,0.7);
+    }
+
+    .about-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(40px, 5.5vw, 72px);
+      line-height: 0.95;
+      text-transform: uppercase;
+      position: relative;
+      margin-bottom: 48px;
+    }
+
+    .about-heading .script-overlay {
+      font-family: 'Caveat', cursive;
+      font-weight: 700;
+      color: var(--neon);
+      font-size: clamp(28px, 3.5vw, 48px);
+      text-transform: none;
+      display: inline;
+    }
+
+    /* Hand-drawn underline */
+    .underline-hand {
+      position: relative;
+      display: inline-block;
+    }
+    .underline-hand::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -6px;
+      width: 100%;
+      height: 3px;
+      background: var(--neon);
+      clip-path: polygon(0% 60%, 2% 0%, 4% 80%, 6% 20%, 8% 70%, 10% 10%, 12% 60%, 14% 30%, 16% 80%, 18% 20%, 20% 60%, 22% 10%, 24% 70%, 26% 30%, 28% 80%, 30% 20%, 32% 60%, 34% 10%, 36% 70%, 38% 30%, 40% 80%, 42% 20%, 44% 60%, 46% 10%, 48% 70%, 50% 30%, 52% 80%, 54% 20%, 56% 60%, 58% 10%, 60% 70%, 62% 30%, 64% 80%, 66% 20%, 68% 60%, 70% 10%, 72% 70%, 74% 30%, 76% 80%, 78% 20%, 80% 60%, 82% 10%, 84% 70%, 86% 30%, 88% 80%, 90% 20%, 92% 60%, 94% 10%, 96% 70%, 98% 30%, 100% 60%);
+    }
+
+    .about-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    .tag {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: rgba(240,244,255,0.85);
+      transition: all 0.2s;
+    }
+    .tag:hover, .tag.active {
+      background: var(--neon-dim);
+      border-color: rgba(127,255,58,0.4);
+      color: var(--neon);
+    }
+
+    .about-quote {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(20px, 2.5vw, 30px);
+      color: rgba(240,244,255,0.75);
+      line-height: 1.5;
+      transform: rotate(-1deg);
+      margin-top: 32px;
+      padding-left: 20px;
+      border-left: 2px solid rgba(127,255,58,0.5);
+    }
+
+    /* Right side: card */
+    .about-right {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .about-card {
+      padding: 28px 32px;
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease;
+    }
+    .about-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      color: rgba(255,255,255,0.04);
+      position: absolute;
+      top: 12px; right: 20px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .card-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+      color: var(--cream);
+    }
+
+    .card-desc {
+      font-size: 11px;
+      line-height: 1.9;
+      color: rgba(240,244,255,0.8);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .card-accent {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 2px;
+      width: 0;
+      background: var(--neon);
+      transition: width 0.4s ease;
+    }
+    .about-card:hover .card-accent {
+      width: 100%;
+    }
+
+    /* ============================================
+       SECTION 3: SKILLS — 3D FIXED ORBIT BG
+    ============================================ */
+    #skills { position: relative; }
+
+    .orbit-fixed-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+    }
+    .orbit-fixed-bg.visible { opacity: 1; }
+
+    /* Scene: perspective but NO preserve-3d here — center stays flat */
+    .orbit-3d-scene {
+      width: min(92vw, 92vh);
+      height: min(92vw, 92vh);
+      position: relative;
+      perspective: 900px;
+      perspective-origin: 50% 50%;
+    }
+
+    /* Spinning layer: preserve-3d so pills inside are truly 3D */
+    .orbit-rings-spin {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      transform: rotateX(60deg) rotateZ(0deg);
+      will-change: transform;
+    }
+
+    .orbit-ring {
+      position: absolute;
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .orbit-ring-1 { width: 14%; height: 14%; border: 1px solid rgba(127,255,58,0.4); }
+    .orbit-ring-2 { width: 58%; height: 58%; border: 1px dashed rgba(255,255,255,0.12); }
+    .orbit-ring-3 { width: 80%; height: 80%; border: 1px solid rgba(255,255,255,0.07); }
+    .orbit-ring-4 { width: 100%; height: 100%; border: 1px solid rgba(255,255,255,0.04); }
+
+    /* Pill anchor: pure 2D, NO rotation at all — always faces screen naturally
+       JS sets left/top; translate(-50%,-50%) centers it on that point */
+    .pill-anchor {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      transition: opacity 0.2s;
+    }
+
+    /* About section: remove full-screen glass, just let cards handle it */
+    #about {
+      position: relative;
+      z-index: 2;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      overflow: visible;
+    }
+
+    /* The pill itself — transform-origin at bottom so it stands from the ring */
+    .skill-pill {
+      display: block;
+      padding: 6px 13px;
+      border-radius: 20px;
+      font-size: clamp(8px, 0.85vw, 10px);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transform-origin: center center;
+      backface-visibility: visible;
+      cursor: none;
+    }
+    .skill-pill.tech  { background: rgba(127,255,58,0.14); border: 1px solid rgba(127,255,58,0.4); color: var(--neon); }
+    .skill-pill.art   { background: rgba(255,107,53,0.14); border: 1px solid rgba(255,107,53,0.4); color: var(--accent); }
+    .skill-pill.mind  { background: rgba(176,126,255,0.14); border: 1px solid rgba(176,126,255,0.4); color: var(--purple); }
+
+    /* Center: OUTSIDE spin layer, always flat facing screen */
+    .orbit-center {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(80px, 9vw, 130px);
+      height: clamp(80px, 9vw, 130px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(127,255,58,0.28), rgba(127,255,58,0.04));
+      border: 1px solid rgba(127,255,58,0.35);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Caveat', cursive;
+      font-size: clamp(11px, 1.4vw, 18px);
+      color: var(--neon);
+      text-align: center;
+      line-height: 1.3;
+      z-index: 2;
+      box-shadow: 0 0 40px rgba(127,255,58,0.1), 0 0 80px rgba(127,255,58,0.04);
+    }
+
+    /* Scroll content */
+    .skills-scroll-content {
+      position: relative;
+      z-index: 3;
+      padding: 30vh 0 140px;
+    }
+
+    .skills-header { text-align: center; margin-bottom: 80px; position: relative; }
+    .skills-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 64px); text-transform: uppercase; line-height: 1; }
+    .skills-subtitle { font-family: 'Caveat', cursive; font-size: clamp(20px, 2.5vw, 32px); color: var(--neon); margin-top: 8px; transform: rotate(-1deg); display: inline-block; }
+
+    .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; position: relative; }
+
+    /* Very transparent glass — orbit glows through clearly */
+    .skill-category {
+      padding: 28px;
+      border-radius: 16px;
+      transition: transform 0.3s;
+      background: rgba(4, 11, 26, 0.18) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08) !important;
+    }
+    .skill-category:hover {
+      transform: translateY(-6px);
+      background: rgba(4, 11, 26, 0.35) !important;
+    }
+
+    .skill-cat-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .skill-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .skill-item { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(240,244,255,0.85); display: flex; align-items: center; gap: 10px; }
+    .skill-item::before { content: ''; width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; }
+    .skill-item.neon::before { background: var(--neon); }
+    .skill-item.orange::before { background: var(--accent); }
+    .skill-item.purple::before { background: var(--purple); }
+
+    /* Sections that sit above the fixed orbit */
+    #hero, #vision, footer, .section-divider {
+      position: relative;
+      z-index: 2;
+    }
+    #hero {
+      background: transparent; /* hero has its own orbs */
+    }
+    #vision {
+      background: rgba(4, 11, 26, 0.45);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    #vision {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 0;
+    }
+
+    .vision-bg-orb {
+      position: absolute;
+      width: 800px; height: 800px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(63,80,255,0.12), transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: pulseBig 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes pulseBig {
+      0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+      50% { transform: translate(-50%,-50%) scale(1.1); opacity: 1; }
+    }
+
+    .vision-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+    }
+
+    .vision-left {
+      position: relative;
+    }
+
+    .vision-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(44px, 6.5vw, 96px);
+      text-transform: uppercase;
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+    }
+
+    .vision-heading .dim { color: rgba(240,244,255,0.45); }
+    .vision-heading .neon { color: var(--neon); }
+    .vision-heading .script {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(32px, 4.5vw, 68px);
+      text-transform: none;
+      color: var(--neon);
+      display: block;
+    }
+
+    .vision-right {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .vision-text {
+      font-size: 12px;
+      line-height: 2;
+      color: rgba(240,244,255,0.85);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .vision-text strong {
+      color: var(--cream);
+      font-weight: 700;
+    }
+
+    .vision-goals {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .goal-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px 24px;
+      border-radius: 12px;
+      transition: all 0.3s;
+    }
+    .goal-item:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .goal-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      color: rgba(255,255,255,0.2);
+      line-height: 1;
+      flex-shrink: 0;
+      width: 40px;
+    }
+
+    .goal-content {}
+    .goal-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--cream);
+      margin-bottom: 6px;
+    }
+    .goal-desc {
+      font-size: 11px;
+      line-height: 1.8;
+      color: rgba(240,244,255,0.75);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 36px;
+      background: var(--neon);
+      color: var(--bg);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: all 0.3s;
+      cursor: none;
+      margin-top: 8px;
+      align-self: flex-start;
+    }
+    .cta-btn:hover {
+      background: var(--cream);
+      transform: translate(-3px, -3px);
+      box-shadow: 6px 6px 0 var(--neon);
+    }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    footer {
+      padding: 40px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 2;
+      background: rgba(4, 11, 26, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(240,244,255,0.6);
+    }
+
+    .footer-note {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.55);
+    }
+    .footer-note span {
+      font-family: 'Caveat', cursive;
+      color: var(--neon);
+      font-size: 14px;
+    }
+
+    /* ============================================
+       DIVIDER ELEMENT
+    ============================================ */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 40px;
+      position: relative;
+      z-index: 1;
+    }
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent);
+    }
+    .divider-label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.55);
+    }
+
+    /* ============================================
+       SCROLL ANIMATIONS
+    ============================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.35s; }
+    .reveal-delay-4 { transition-delay: 0.5s; }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 900px) {
+      .nav-links, .nav-tag { display: none; }
+      .about-inner, .vision-inner { grid-template-columns: 1fr; gap: 48px; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .skills-scroll-content { padding: 30vh 0 80px; }
+      .orbit-3d-scene { width: 92vw; height: 92vw; }
+      .skill-pill { font-size: 8px; padding: 5px 10px; }
+      .hero-content { padding: 40px 20px 20px; }
+      nav { padding: 20px; }
+      .container { padding: 0 20px; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+      .annotation { display: none; }
+      .hero-bottom { padding: 16px 20px; }
+    }
+  
+    /* Noto Serif TC: ONLY for Chinese text areas, not English script accents */
+    .about-quote,
+    .pull-quote p,
+    .log-body p,
+    .book-note,
+    .cat-script,
+    .page-desc,
+    .blog-desc,
+    .hero-desc,
+    .card-desc,
+    .card-excerpt,
+    .goal-desc,
+    .vision-text,
+    .work-desc,
+    .next-post-excerpt,
+    .article-body p,
+    .article-lead {
+      font-family: 'Noto Serif TC', serif;
+    }
+    /* Body text size boost */
+    body { font-size: 14px; }
+    .card-desc, .work-desc, .page-desc, .blog-desc, .hero-desc,
+    .card-excerpt, .goal-desc, .vision-text, .footer-note,
+    .meta-item, .card-date, .book-author, .log-date,
+    .post-footer-label, .next-post-excerpt {
+      font-size: 13px !important;
+      line-height: 2 !important;
+    }
+    /* Label / tag text */
+    .card-tag, .work-tag, .status-tag, .book-status,
+    .toc-item a, .filter-btn, .filter-row .filter-btn,
+    .nav-tag, .hero-eyebrow, .section-label, .page-eyebrow,
+    .blog-eyebrow, .divider-label, .card-read, .post-back,
+    .work-year, .card-date { font-size: 11px !important; }
+    /* Nav links */
+    .nav-links a { font-size: 13px !important; }
+    /* TOC */
+    .toc-item a { font-size: 12px !important; }
+    /* Skill items */
+    .skill-item { font-size: 13px !important; }
+    /* About cards body */
+    .card-desc { font-size: 13px !important; }
+    /* Article body */
+    .article-lead { font-size: 15px !important; }
+    .article-body p { font-size: 14px !important; }
+    /* Book note */
+    .book-note { font-size: 15px !important; }
+    /* Now log body */
+    .log-body p { font-size: 14px !important; }
+
+  
+    /* ---- NAV FIX: compact to fit all 6 links ---- */
+    nav {
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links {
+      gap: 24px !important;
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links a {
+      font-size: 14px !important;
+      letter-spacing: 0.08em !important;
+      white-space: nowrap;
+    }
+
+  
+    /* ---- TEXT RENDERING FIX ---- */
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    /* Isolate orbs so they don't affect text rendering */
+    .orb {
+      isolation: isolate;
+      will-change: auto !important;
+      transform: translateZ(0);
+    }
+    /* Prevent blur filter from creating new stacking context on text */
+    #starfield {
+      isolation: isolate;
+    }
+
+  
+    /* ---- HEADING SHARPNESS FIX ---- */
+    h1, h2, h3,
+    .hero-heading, .about-heading, .about-name,
+    .blog-title, .page-title, .skills-title,
+    .vision-heading, .post-title, .card-title,
+    .work-title, .chapter-title, .tl-title,
+    .nav-logo, .nav-links a {
+      -webkit-font-smoothing: subpixel-antialiased;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Custom cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Starfield Canvas -->
+  <canvas id="starfield"></canvas>
+
+  <!-- ==================== SECTION 1: HERO ==================== -->
+  <section id="hero">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <nav>
+      <div class="nav-logo">Emma Thousand<span>.</span></div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="works.html">Works</a></li>
+        <li><a href="blog.html">Blog</a></li>
+        <li><a href="now.html">Now</a></li>
+        <li><a href="reading.html">Reading</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero-content">
+      <div class="hero-eyebrow">Where technology meets imagination</div>
+
+      <h1 class="hero-heading reveal">
+        I'm<br>
+        <span class="accent-script">Emma Thousand,</span>
+        A Creative<br>
+        <span class="underline-hand">Technologist.</span>
+        <span class="annotation">Artist × Engineer × Thinker</span>
+      </h1>
+
+      <div class="hero-sub reveal reveal-delay-2">
+        <p class="hero-desc">
+          Translating imagination into systems,<br>
+          and systems back into wonder —<br>
+          somewhere between art and code.
+        </p>
+        <div class="hero-scroll">
+          <div class="scroll-line"></div>
+          <span>Scroll</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-bottom">
+      <div class="status-dot">Open to collaboration</div>
+      <div class="social-row">
+        <a class="social-btn" href="mailto:ch9003131314@gmail.com" title="Email">✉</a>
+        <a class="social-btn" href="https://www.linkedin.com/in/千華-黃-4b514926a" target="_blank" title="LinkedIn">in</a>
+        <a class="social-btn" href="https://github.com/EmmaHuang333" target="_blank" title="GitHub">◈</a>
+        <a class="social-btn" href="https://www.instagram.com/emma_thousand_0313" target="_blank" title="Instagram">◉</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">
+    <div class="divider-line"></div>
+    <span class="divider-label">Chapter 01 — Signal</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ==================== SECTION 2: ABOUT ==================== -->
+  <section id="about">
+    <div class="orb" style="width:420px;height:420px;background:radial-gradient(circle,#4040ff,transparent);top:-60px;right:10%;opacity:0.14;animation:drift1 18s ease-in-out infinite alternate;position:absolute;filter:blur(90px);border-radius:50%;pointer-events:none;"></div>
+    <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#7FFF3A,transparent);bottom:20px;left:5%;opacity:0.12;animation:drift2 22s ease-in-out infinite alternate;position:absolute;filter:blur(80px);border-radius:50%;pointer-events:none;"></div>
+    <div class="container">
+      <div class="about-inner">
+        <div class="about-left reveal">
+          <div class="section-label">About me</div>
+
+          <h2 class="about-heading">
+            Hello!<br>
+            I'm <span class="script-overlay">Emma Thousand</span>
+          </h2>
+
+          <div class="about-tags">
+            <span class="tag active">Technical Artist</span>
+            <span class="tag">3D Generalist</span>
+            <span class="tag">Creative Technologist</span>
+            <span class="tag">Systems Thinker</span>
+            <span class="tag">Tech × Art</span>
+            <span class="tag">Curiosity-Driven</span>
+          </div>
+
+          <blockquote class="about-quote">
+            "未知不是終點，<br>是還沒命名的起點。"
+          </blockquote>
+        </div>
+
+        <div class="about-right">
+          <div class="about-card glass reveal reveal-delay-1">
+            <div class="card-num">01</div>
+            <div class="card-icon">◎</div>
+            <div class="card-title">Technical Artist</div>
+            <p class="card-desc">
+              現任職於 3D 軟體開發公司，<br>
+              橫跨視覺品質研究、跨團隊技術溝通，<br>
+              與工程師說藝術，對藝術家說技術。
+            </p>
+            <div class="card-accent"></div>
+          </div>
+
+          <div class="about-card glass reveal reveal-delay-2">
+            <div class="card-num">02</div>
+            <div class="card-icon">⬡</div>
+            <div class="card-title">Cross-Domain Thinker</div>
+            <p class="card-desc">
+              Science × Philosophy × Sociology —<br>
+              著迷於 Nietzsche、Wittgenstein 與數學的語言，<br>
+              相信知識的邊界只是還沒出發的地平線。
+            </p>
+            <div class="card-accent"></div>
+          </div>
+
+          <div class="about-card glass reveal reveal-delay-3">
+            <div class="card-num">03</div>
+            <div class="card-icon">◈</div>
+            <div class="card-title">Builder in Progress</div>
+            <p class="card-desc">
+              正在探索 Rendering Engine、OpenGL、<br>
+              VR 開發與互動藝術創作。<br>
+              Building in public — 🚧 github.com/EmmaHuang333
+            </p>
+            <div class="card-accent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">
+    <div class="divider-line"></div>
+    <span class="divider-label">Chapter 02 — Orbit</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ==================== SECTION 3: SKILLS v3 ==================== -->
+  <section id="skills">
+
+    <!-- FIXED ORBIT BG — toggled visible by JS when section in viewport -->
+    <div class="orbit-fixed-bg" id="orbitFixedBg">
+      <div class="orbit-3d-scene" id="orbit3dScene">
+        <!-- Rings only inside the 3D spin layer -->
+        <div class="orbit-rings-spin" id="orbitSpin">
+          <div class="orbit-ring orbit-ring-4"></div>
+          <div class="orbit-ring orbit-ring-3"></div>
+          <div class="orbit-ring orbit-ring-2"></div>
+          <div class="orbit-ring orbit-ring-1"></div>
+        </div>
+        <!-- Center: flat, never spins -->
+        <div class="orbit-center">Emma<br>Thousand</div>
+        <!-- Pills OUTSIDE spin layer — always face viewer, JS updates position only -->
+        <div class="pill-anchor" id="sn1"><span class="skill-pill tech">Blender</span></div>
+        <div class="pill-anchor" id="sn2"><span class="skill-pill tech">Substance</span></div>
+        <div class="pill-anchor" id="sn3"><span class="skill-pill tech">Unity</span></div>
+        <div class="pill-anchor" id="sn4"><span class="skill-pill art">3D Animation</span></div>
+        <div class="pill-anchor" id="sn5"><span class="skill-pill art">VR / AR</span></div>
+        <div class="pill-anchor" id="sn6"><span class="skill-pill art">Motion Capture</span></div>
+        <div class="pill-anchor" id="sn7"><span class="skill-pill mind">Philosophy</span></div>
+        <div class="pill-anchor" id="sn8"><span class="skill-pill mind">Mathematics</span></div>
+        <div class="pill-anchor" id="sn9"><span class="skill-pill mind">Systems Thinking</span></div>
+      </div>
+    </div>
+
+    <!-- SCROLLABLE CONTENT slides over the fixed orbit -->
+    <div class="skills-scroll-content">
+      <div class="orb" style="width:350px;height:350px;background:radial-gradient(circle,#FF6B35,transparent);top:20%;right:-5%;opacity:0.13;animation:drift3 19s ease-in-out infinite alternate;position:absolute;filter:blur(90px);border-radius:50%;pointer-events:none;"></div>
+      <div class="orb" style="width:280px;height:280px;background:radial-gradient(circle,#9B5CF6,transparent);bottom:15%;left:-3%;opacity:0.13;animation:drift1 24s ease-in-out infinite alternate;position:absolute;filter:blur(80px);border-radius:50%;pointer-events:none;"></div>
+      <div class="container">
+        <div class="skills-header reveal">
+          <h2 class="skills-title">My Skill<br>Universe</h2>
+          <div class="skills-subtitle">— 技術 × 藝術 × 思維</div>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-category reveal reveal-delay-1">
+            <div class="skill-cat-label" style="color:var(--neon);"><span>◎</span> Tools & Tech</div>
+            <ul class="skill-list">
+              <li class="skill-item neon">Blender · Cycles / EEVEE</li>
+              <li class="skill-item neon">Geometry Nodes · Shaders</li>
+              <li class="skill-item neon">Substance Painter / Designer</li>
+              <li class="skill-item neon">Unity / Unreal</li>
+              <li class="skill-item neon">VR / AR 開發接觸</li>
+              <li class="skill-item neon">Motion Capture</li>
+            </ul>
+          </div>
+          <div class="skill-category reveal reveal-delay-2">
+            <div class="skill-cat-label" style="color:var(--accent);"><span>⬡</span> Creative Practice</div>
+            <ul class="skill-list">
+              <li class="skill-item orange">3D 建模與動畫製作</li>
+              <li class="skill-item orange">視覺品質檢測與回報</li>
+              <li class="skill-item orange">Photoshop / Illustrator</li>
+              <li class="skill-item orange">After Effects / Premiere</li>
+              <li class="skill-item orange">AI 生成工具應用</li>
+              <li class="skill-item orange">Figma · 商業設計</li>
+            </ul>
+          </div>
+          <div class="skill-category reveal reveal-delay-3">
+            <div class="skill-cat-label" style="color:var(--purple);"><span>◈</span> Thinking & Research</div>
+            <ul class="skill-list">
+              <li class="skill-item purple">跨團隊技術溝通</li>
+              <li class="skill-item purple">技術文件撰寫與規格制定</li>
+              <li class="skill-item purple">工具研究與評估</li>
+              <li class="skill-item purple">數學 / 邏輯思考</li>
+              <li class="skill-item purple">哲學閱讀與跨域研究</li>
+              <li class="skill-item purple">HCI 人機互動興趣</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider">
+    <div class="divider-line"></div>
+    <span class="divider-label">Chapter 03 — Destination</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ==================== SECTION 4: VISION ==================== -->
+  <section id="vision">
+    <div class="vision-bg-orb"></div>
+    <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,#7FFF3A,transparent);bottom:-80px;right:-60px;opacity:0.15;animation:drift2 16s ease-in-out infinite alternate;position:absolute;filter:blur(80px);border-radius:50%;pointer-events:none;"></div>
+    <div class="orb" style="width:380px;height:380px;background:radial-gradient(circle,#FF6B35,transparent);top:40px;left:-40px;opacity:0.12;animation:drift1 20s ease-in-out infinite alternate;position:absolute;filter:blur(80px);border-radius:50%;pointer-events:none;"></div>
+    <div class="container">
+      <div class="vision-inner">
+        <div class="vision-left reveal">
+          <h2 class="vision-heading">
+            <span class="dim">What</span><br>
+            I'm<br>
+            <span class="neon">Building.</span><br>
+            <span class="script">— 還沒有名字的那條路</span>
+          </h2>
+        </div>
+
+        <div class="vision-right">
+          <p class="vision-text reveal">
+            我不想成為某個已有名字的職位，<br>
+            而是想成為某種<strong>還沒被定義的存在</strong>——<br>
+            一個能在技術與人文之間自由穿梭的創造者，<br>
+            讓工具說詩的語言，讓系統感受人的溫度。
+          </p>
+
+          <div class="vision-goals">
+            <div class="goal-item reveal reveal-delay-1">
+              <div class="goal-num">01</div>
+              <div class="goal-content">
+                <div class="goal-title">Now · Creative Technologist</div>
+                <p class="goal-desc">
+                  在藝術與工程的交界處工作，<br>
+                  用視覺說技術，用技術說故事。
+                </p>
+              </div>
+            </div>
+            <div class="goal-item reveal reveal-delay-2">
+              <div class="goal-num">02</div>
+              <div class="goal-content">
+                <div class="goal-title">Next · HCI & Interaction Design</div>
+                <p class="goal-desc">
+                  探索人與技術如何真正相遇，<br>
+                  讓介面不只是工具，而是感知的延伸。
+                </p>
+              </div>
+            </div>
+            <div class="goal-item reveal reveal-delay-3">
+              <div class="goal-num">03</div>
+              <div class="goal-content">
+                <div class="goal-title">Further · Civilization-Scale Creativity</div>
+                <p class="goal-desc">
+                  在 AI 與創造力的交會點上，<br>
+                  設計真正改變人類體驗的東西。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <a href="mailto:ch9003131314@gmail.com" class="cta-btn reveal reveal-delay-4">
+            Let's Connect →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer>
+    <div class="footer-logo">Emma Thousand — 2025</div>
+    <div class="footer-note">
+      Designed from curiosity <span>♡</span> Built from Taiwan
+    </div>
+  </footer>
+
+  <!-- ============================================
+       JAVASCRIPT
+  ============================================ -->
+  <script>
+    // ---- Starfield ----
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const stars = Array.from({ length: 180 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 1.4 + 0.2,
+      alpha: Math.random() * 0.6 + 0.1,
+      speed: Math.random() * 0.015 + 0.003,
+      phase: Math.random() * Math.PI * 2,
+    }));
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const t = Date.now() / 1000;
+      stars.forEach(s => {
+        const a = s.alpha * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200, 220, 255, ${a})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    drawStars();
+
+    // ---- Custom Cursor ----
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button, .about-card, .skill-category, .goal-item').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        ring.style.width = '60px';
+        ring.style.height = '60px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '12px';
+        cursor.style.height = '12px';
+        ring.style.width = '36px';
+        ring.style.height = '36px';
+      });
+    });
+
+    // ---- 3D Orbit: rings spin, pills always face viewer via 2D projection ----
+    (function() {
+      const orbitFixedBg  = document.getElementById('orbitFixedBg');
+      const orbitSpin     = document.getElementById('orbitSpin');
+      const skillsSection = document.getElementById('skills');
+      const scene         = document.getElementById('orbit3dScene');
+
+      const nodeData = [
+        ['sn1',  30,  46], ['sn2', 150, 46], ['sn3', 270, 46],
+        ['sn4',   0,  62], ['sn5', 120, 62], ['sn6', 240, 62],
+        ['sn7',  60,  78], ['sn8', 180, 78], ['sn9', 300, 78],
+      ];
+
+      const TILT_DEG = 60;
+      const TILT_RAD = TILT_DEG * Math.PI / 180;
+      let spinAngle = 0;
+      let targetSpin = 0;
+
+      function tick() {
+        const rect = skillsSection.getBoundingClientRect();
+        const divider = document.querySelector('.section-divider:nth-of-type(2)');
+        const dividerRect = divider ? divider.getBoundingClientRect() : rect;
+
+        // Trigger exactly at chapter 02 divider
+        const triggerEl = document.querySelector('#skills ~ .section-divider') || divider;
+        // Use the divider BEFORE skills (chapter 02)
+        const allDividers = document.querySelectorAll('.section-divider');
+        const ch02 = allDividers[1]; // 0=ch01, 1=ch02, 2=ch03
+        const ch02Rect = ch02 ? ch02.getBoundingClientRect() : rect;
+
+        // fadeIn: start when ch02 divider reaches middle of screen
+        const fadeIn = Math.max(0, Math.min(1, (window.innerHeight * 0.7 - ch02Rect.top) / (window.innerHeight * 0.4)));
+
+        // totalScroll: accumulated scroll distance from ch02 onward
+        const ch02Top = ch02 ? ch02.offsetTop : 0;
+        const scrolledFromCh02 = Math.max(0, window.scrollY - ch02Top);
+        // Add fadeIn*60 so orbit is already spinning when it first appears
+        targetSpin = fadeIn * 20 + scrolledFromCh02 * 0.08;
+
+        const inSkills = rect.top < window.innerHeight && rect.bottom > 0;
+
+        if (inSkills) {
+          const scrolled = Math.max(0, -rect.top);
+          const total = skillsSection.offsetHeight;
+          const progress = Math.min(1, scrolled / total);
+          const fadeOut = progress > 0.4 ? 1 - (progress - 0.4) / 0.6 : 1;
+          orbitFixedBg.style.opacity = (Math.min(fadeIn, fadeOut)).toFixed(2);
+        } else if (rect.top > 0) {
+          // Skills section is below — still approaching, show fadeIn
+          orbitFixedBg.style.opacity = fadeIn.toFixed(2);
+        } else {
+          // Skills section is above — already passed, hide completely
+          orbitFixedBg.style.opacity = '0';
+        }
+        spinAngle += (targetSpin - spinAngle) * 0.04;
+
+        // Spin the rings
+        if (orbitSpin) {
+          orbitSpin.style.transform = `rotateX(${TILT_DEG}deg) rotateZ(${spinAngle}deg)`;
+        }
+
+        // Project 3D orbit point → 2D screen position for each pill
+        const W = scene ? scene.offsetWidth  : 500;
+        const H = scene ? scene.offsetHeight : 500;
+
+        nodeData.forEach(([id, baseDeg, rPct]) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          const angle = (baseDeg + spinAngle - 90) * Math.PI / 180;
+          const r = (rPct / 100) * W / 2;
+          // 3D coords on orbit plane
+          const x3 = r * Math.cos(angle);
+          const y3 = r * Math.sin(angle);
+          // Project through rotateX(TILT): x unchanged, y compressed by cos(tilt)
+          const x2d = W / 2 + x3;
+          const y2d = H / 2 + y3 * Math.cos(TILT_RAD);
+          // Depth-based opacity: pills at front brighter
+          const depth = y3 * Math.sin(TILT_RAD);
+          const opacity = 0.4 + 0.6 * ((depth / r + 1) / 2);
+
+          el.style.left    = `${x2d}px`;
+          el.style.top     = `${y2d}px`;
+          el.style.opacity = opacity.toFixed(2);
+          // rotateX(-TILT) is fixed in CSS — always faces viewer
+        });
+
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // ---- Parallax Orbs ----
+    document.addEventListener('mousemove', e => {
+      const x = (e.clientX / window.innerWidth - 0.5);
+      const y = (e.clientY / window.innerHeight - 0.5);
+      document.querySelectorAll('.orb').forEach((orb, i) => {
+        const depth = (i + 1) * 18;
+        orb.style.transform = `translate(${x * depth}px, ${y * depth}px)`;
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-TW" style="background:#040b1a !important; color-scheme: dark;">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>當 Shader 開始說故事 — Emma Thousand</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@400;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Serif+TC:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #040b1a;
+      --cream: #F0F4FF;
+      --neon: #7FFF3A;
+      --accent: #FF6B35;
+      --purple: #B07EFF;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background: #040b1a !important; color: #F0F4FF; font-family: 'Space Mono', monospace; overflow-x: hidden; cursor: none; min-height: 100vh; }
+    body::after { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"); pointer-events: none; z-index: 100; opacity: 0.35; mix-blend-mode: overlay; }
+
+    /* CURSOR */
+    .cursor { width: 10px; height: 10px; background: var(--neon); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); mix-blend-mode: exclusion; transition: width .2s, height .2s; }
+    .cursor-ring { width: 32px; height: 32px; border: 1px solid rgba(127,255,58,0.4); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .3s, height .3s; }
+
+    /* STARFIELD */
+    #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* ORBS */
+    .orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; }
+
+    /* NAV */
+    nav { position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; padding: 28px 40px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cream); text-decoration: none; }
+    .nav-logo span { color: var(--neon); }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a { font-family: 'Bebas Neue', sans-serif; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(240,244,255,0.6); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--neon); }
+
+    /* PROGRESS BAR */
+    .progress-bar { position: fixed; top: 0; left: 0; height: 2px; background: var(--neon); z-index: 999; width: 0%; transition: width 0.1s linear; box-shadow: 0 0 8px var(--neon); }
+
+    /* TWO-COLUMN LAYOUT */
+    .post-layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      min-height: 100vh;
+    }
+
+    /* LEFT SIDEBAR — sticky */
+    .post-sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 60px 48px 60px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .sidebar-top {}
+
+    .post-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.35);
+      text-decoration: none;
+      margin-bottom: 48px;
+      transition: color 0.2s;
+    }
+    .post-back:hover { color: var(--neon); }
+    .post-back::before { content: '←'; }
+
+    .post-tag {
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 12px;
+      display: inline-block;
+      margin-bottom: 24px;
+    }
+    .post-tag.tech { background: rgba(127,255,58,0.1); color: var(--neon); border: 1px solid rgba(127,255,58,0.25); }
+    .post-tag.essay { background: rgba(255,107,53,0.1); color: var(--accent); border: 1px solid rgba(255,107,53,0.25); }
+
+    .post-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(28px, 3vw, 44px);
+      text-transform: uppercase;
+      line-height: 1.0;
+      letter-spacing: 0.01em;
+      color: var(--cream);
+      margin-bottom: 20px;
+    }
+
+    .post-script {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(18px, 1.8vw, 24px);
+      color: var(--neon);
+      display: block;
+      margin-top: 6px;
+      line-height: 1.3;
+    }
+
+    .post-meta {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .meta-item {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .meta-item::before { content: '—'; color: rgba(240,244,255,0.15); }
+
+    /* Reading progress indicator */
+    .sidebar-progress {
+      margin-top: 40px;
+    }
+    .progress-label {
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.2);
+      margin-bottom: 8px;
+    }
+    .progress-track {
+      width: 100%;
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 1px;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--neon);
+      border-radius: 1px;
+      width: 0%;
+      transition: width 0.2s;
+      box-shadow: 0 0 6px var(--neon);
+    }
+
+    .sidebar-bottom {}
+
+    /* TOC */
+    .toc {
+      margin-top: 40px;
+    }
+    .toc-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.25);
+      margin-bottom: 14px;
+    }
+    .toc-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .toc-item a {
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      color: rgba(240,244,255,0.45);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1.5;
+    }
+    .toc-item a::before { content: ''; width: 16px; height: 1px; background: currentColor; flex-shrink: 0; transition: width 0.2s; }
+    .toc-item a:hover, .toc-item.active a { color: var(--neon); }
+    .toc-item.active a::before { width: 24px; }
+
+    /* Sidebar decoration number */
+    .sidebar-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 100px;
+      color: rgba(255,255,255,0.02);
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+      position: absolute;
+      bottom: 40px;
+      left: 20px;
+    }
+
+    /* RIGHT — article content */
+    .post-content {
+      padding: 60px 80px 120px 96px;
+      max-width: 780px;
+    }
+
+    /* Article typography */
+    .article-lead {
+      font-size: 15px;
+      line-height: 1.9;
+      color: rgba(240,244,255,0.75);
+      letter-spacing: 0.04em;
+      margin-bottom: 56px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .article-body h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(20px, 2.2vw, 28px);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--cream);
+      margin: 56px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .article-body h2::before {
+      content: '';
+      width: 24px; height: 2px;
+      background: var(--neon);
+      flex-shrink: 0;
+    }
+
+    .article-body h3 {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(20px, 2vw, 26px);
+      color: var(--accent);
+      margin: 36px 0 14px;
+    }
+
+    .article-body p {
+      font-size: 13px;
+      line-height: 2.1;
+      color: rgba(240,244,255,0.68);
+      letter-spacing: 0.04em;
+      margin-bottom: 24px;
+    }
+
+    .article-body strong {
+      color: var(--cream);
+      font-weight: 700;
+    }
+
+    .article-body em {
+      font-style: italic;
+      color: rgba(240,244,255,0.55);
+    }
+
+    /* Pull quote */
+    .pull-quote {
+      margin: 48px 0;
+      padding: 28px 32px;
+      border-left: 2px solid var(--neon);
+      background: rgba(127,255,58,0.03);
+      border-radius: 0 12px 12px 0;
+    }
+    .pull-quote p {
+      font-family: 'Caveat', cursive;
+      font-size: clamp(20px, 2.2vw, 28px);
+      color: rgba(240,244,255,0.8);
+      line-height: 1.5;
+      letter-spacing: 0.02em;
+      margin-bottom: 0;
+    }
+    .pull-quote cite {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.28);
+      margin-top: 12px;
+    }
+
+    /* Code block */
+    .code-block {
+      margin: 32px 0;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .code-label {
+      padding: 10px 18px;
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .code-label::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--neon); opacity: 0.6; }
+    .code-block pre {
+      padding: 20px 18px;
+      font-size: 12px;
+      line-height: 1.8;
+      color: rgba(240,244,255,0.65);
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .code-block .token-keyword { color: var(--purple); }
+    .code-block .token-fn { color: var(--neon); }
+    .code-block .token-num { color: var(--accent); }
+    .code-block .token-comment { color: rgba(240,244,255,0.25); font-style: italic; }
+
+    /* Divider */
+    .section-break {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 56px 0;
+    }
+    .section-break-line { flex: 1; height: 1px; background: linear-gradient(to right, rgba(255,255,255,0.06), transparent); }
+    .section-break-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(127,255,58,0.4); }
+
+    /* POST FOOTER — next article + back */
+    .post-footer {
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .post-footer-label {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.25);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .post-footer-label::before { content: ''; flex: 0 0 20px; height: 1px; background: rgba(240,244,255,0.25); }
+
+    .next-post {
+      display: block;
+      padding: 28px 32px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .next-post:hover { background: rgba(255,255,255,0.055); border-color: rgba(255,255,255,0.15); transform: translateY(-3px); }
+    .next-post::after { content: '→'; position: absolute; right: 28px; top: 50%; transform: translateY(-50%); font-size: 20px; color: rgba(240,244,255,0.2); transition: all 0.2s; }
+    .next-post:hover::after { right: 22px; color: var(--neon); }
+
+    .next-post-tag { font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; display: block; }
+    .next-post-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(18px, 2vw, 24px); text-transform: uppercase; color: var(--cream); }
+    .next-post-excerpt { font-size: 11px; color: rgba(240,244,255,0.4); margin-top: 8px; line-height: 1.7; letter-spacing: 0.03em; }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(240,244,255,0.4);
+      text-decoration: none;
+      padding: 14px 24px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    .back-btn:hover { color: var(--neon); border-color: rgba(127,255,58,0.3); background: rgba(127,255,58,0.05); }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .post-layout { grid-template-columns: 1fr; }
+      .post-sidebar { position: relative; height: auto; padding: 32px 20px 24px; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.05); }
+      .sidebar-num { display: none; }
+      .toc { display: none; }
+      .post-content { padding: 40px 20px 80px; }
+      nav { padding: 20px; }
+      .nav-links { display: none; }
+    }
+  
+    /* Noto Serif TC: ONLY for Chinese text areas, not English script accents */
+    .about-quote,
+    .pull-quote p,
+    .log-body p,
+    .book-note,
+    .cat-script,
+    .page-desc,
+    .blog-desc,
+    .hero-desc,
+    .card-desc,
+    .card-excerpt,
+    .goal-desc,
+    .vision-text,
+    .work-desc,
+    .next-post-excerpt,
+    .article-body p,
+    .article-lead {
+      font-family: 'Noto Serif TC', serif;
+    }
+    /* Body text size boost */
+    body { font-size: 14px; }
+    .card-desc, .work-desc, .page-desc, .blog-desc, .hero-desc,
+    .card-excerpt, .goal-desc, .vision-text, .footer-note,
+    .meta-item, .card-date, .book-author, .log-date,
+    .post-footer-label, .next-post-excerpt {
+      font-size: 13px !important;
+      line-height: 2 !important;
+    }
+    /* Label / tag text */
+    .card-tag, .work-tag, .status-tag, .book-status,
+    .toc-item a, .filter-btn, .filter-row .filter-btn,
+    .nav-tag, .hero-eyebrow, .section-label, .page-eyebrow,
+    .blog-eyebrow, .divider-label, .card-read, .post-back,
+    .work-year, .card-date { font-size: 11px !important; }
+    /* Nav links */
+    .nav-links a { font-size: 13px !important; }
+    /* TOC */
+    .toc-item a { font-size: 12px !important; }
+    /* Skill items */
+    .skill-item { font-size: 13px !important; }
+    /* About cards body */
+    .card-desc { font-size: 13px !important; }
+    /* Article body */
+    .article-lead { font-size: 15px !important; }
+    .article-body p { font-size: 14px !important; }
+    /* Book note */
+    .book-note { font-size: 15px !important; }
+    /* Now log body */
+    .log-body p { font-size: 14px !important; }
+
+  
+    /* ---- NAV FIX: compact to fit all 6 links ---- */
+    nav {
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links {
+      gap: 24px !important;
+      flex-wrap: nowrap;
+      overflow: visible;
+    }
+    .nav-links a {
+      font-size: 11px !important;
+      letter-spacing: 0.08em !important;
+      white-space: nowrap;
+    }
+
+  
+    /* ---- TEXT RENDERING FIX ---- */
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    /* Isolate orbs so they don't affect text rendering */
+    .orb {
+      isolation: isolate;
+      will-change: auto !important;
+      transform: translateZ(0);
+    }
+    /* Prevent blur filter from creating new stacking context on text */
+    #starfield {
+      isolation: isolate;
+    }
+
+  
+    /* ---- HEADING SHARPNESS FIX ---- */
+    h1, h2, h3,
+    .hero-heading, .about-heading, .about-name,
+    .blog-title, .page-title, .skills-title,
+    .vision-heading, .post-title, .card-title,
+    .work-title, .chapter-title, .tl-title,
+    .nav-logo, .nav-links a {
+      -webkit-font-smoothing: subpixel-antialiased;
+      transform: translateZ(0);
+      backface-visibility: hidden;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div class="orb" style="width:460px;height:460px;background:radial-gradient(circle,#4040ff,transparent);top:-60px;right:-60px;opacity:0.09;"></div>
+  <div class="orb" style="width:300px;height:300px;background:radial-gradient(circle,#7FFF3A,transparent);bottom:200px;left:-40px;opacity:0.07;"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="index.html">Emma Thousand<span>.</span></a>
+    <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="works.html">Works</a></li>
+        <li><a href="blog.html" class="active">Blog</a></li>
+        <li><a href="now.html">Now</a></li>
+        <li><a href="reading.html">Reading</a></li>
+      </ul>
+  </nav>
+
+  <div class="post-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="post-sidebar">
+      <div class="sidebar-top">
+        <a class="post-back" href="blog.html">Field Notes</a>
+
+        <span class="post-tag tech">Technical</span>
+
+        <h1 class="post-title">
+          當 Shader<br>開始說故事
+          <span class="post-script">— 渲染的溫度</span>
+        </h1>
+
+        <div class="post-meta">
+          <span class="meta-item">2025.04.18</span>
+          <span class="meta-item">約 8 分鐘閱讀</span>
+          <span class="meta-item">Emma Thousand</span>
+        </div>
+
+        <div class="sidebar-progress">
+          <div class="progress-label">Reading progress</div>
+          <div class="progress-track">
+            <div class="progress-fill" id="sidebarProgress"></div>
+          </div>
+        </div>
+
+        <nav class="toc">
+          <div class="toc-label">Contents</div>
+          <ul class="toc-list">
+            <li class="toc-item" id="toc-1"><a href="#s1">從數學到感知</a></li>
+            <li class="toc-item" id="toc-2"><a href="#s2">Shader 是一種語言</a></li>
+            <li class="toc-item" id="toc-3"><a href="#s3">光的方程式</a></li>
+            <li class="toc-item" id="toc-4"><a href="#s4">技術背後的美學選擇</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="sidebar-bottom">
+        <div class="sidebar-num">01</div>
+      </div>
+    </aside>
+
+    <!-- RIGHT CONTENT -->
+    <main class="post-content" id="postContent">
+
+      <!-- Lead paragraph -->
+      <p class="article-lead reveal">
+        我第一次真正理解 shader 是什麼的時候，不是在讀文件，而是在盯著一個球體的高光，突然想到：
+        這個反光的形狀，其實是某個人在某個地方寫下的一行數學。
+        那一刻，技術和美學對我來說變成了同一件事。
+      </p>
+
+      <div class="article-body">
+
+        <h2 id="s1">從數學到感知</h2>
+        <p class="reveal">
+          Shader 本質上是一組對每個像素執行的函數。輸入是位置、法向量、光源方向，
+          輸出是一個顏色值。聽起來乾燥，但這個過程裡藏著所有視覺美感的底層邏輯——
+          <strong>我們看到的每一個「好看」，都是某種數學結構的投影。</strong>
+        </p>
+        <p class="reveal">
+          Phong 模型把光分成 ambient、diffuse、specular 三個部分。
+          這不只是物理近似，也是一種對「什麼讓東西看起來有質感」的哲學選擇。
+          你決定高光的銳利度，你決定環境光的溫度，你在選擇一種觀看世界的方式。
+        </p>
+
+        <div class="pull-quote reveal">
+          <p>"每一行 GLSL 都是一個關於光如何運作的假設。而好的渲染，是選對了假設。"</p>
+          <cite>— 寫第一個自定義 shader 時的筆記</cite>
+        </div>
+
+        <h2 id="s2">Shader 是一種語言</h2>
+        <p class="reveal">
+          我後來開始把 shader 想成語言，而不是程式。它有語法，但更重要的是它有語意——
+          同樣的光照模型，用不同的參數組合，說的是完全不同的故事。
+          冷色調的 specular 說的是金屬，暖色調漫反射說的是皮膚。
+        </p>
+        <p class="reveal">
+          這讓 Technical Artist 這個工作對我來說有了新的意義：
+          我不只是在調參數，<strong>我在翻譯</strong>——把藝術家腦海中的畫面，
+          翻譯成渲染引擎能理解的語言。
+        </p>
+
+        <div class="section-break reveal">
+          <div class="section-break-line"></div>
+          <div class="section-break-dot"></div>
+          <div class="section-break-line" style="transform:scaleX(-1)"></div>
+        </div>
+
+        <h2 id="s3">光的方程式</h2>
+        <p class="reveal">
+          學 GLSL 的過程裡，我遇到最多的問題不是語法，而是「為什麼這樣看起來對」。
+          這個問題沒有標準答案，因為它涉及人類視覺系統的偏好、文化對美的定義、
+          還有你想讓觀看者感受到什麼。
+        </p>
+
+        <div class="code-block reveal">
+          <div class="code-label">GLSL — Simple Phong Specular</div>
+          <pre><span class="token-comment">// 計算高光強度</span>
+<span class="token-keyword">vec3</span> viewDir = normalize(camPos - fragPos);
+<span class="token-keyword">vec3</span> reflectDir = reflect(-lightDir, normal);
+<span class="token-keyword">float</span> spec = pow(
+  max(dot(viewDir, reflectDir), <span class="token-num">0.0</span>),
+  <span class="token-num">32.0</span>  <span class="token-comment">// shininess — 越高越銳利</span>
+);
+<span class="token-keyword">vec3</span> specular = spec * lightColor * <span class="token-num">0.5</span>;</pre>
+        </div>
+
+        <p class="reveal">
+          那個 <code style="font-size:11px;color:var(--accent);background:rgba(255,107,53,0.08);padding:2px 6px;border-radius:4px;">32.0</code> 是什麼？
+          是一個選擇。是說「這個材質的高光這麼銳」的一個決定。
+          數字本身沒有意義，意義在你為什麼選它。
+        </p>
+
+        <h2 id="s4">技術背後的美學選擇</h2>
+        <p class="reveal">
+          我現在做 Technical Artist 的工作，很多時候就是在處理這種「技術和美學交界處的決定」。
+          工程師問的是「這樣實作對嗎」，藝術家問的是「這樣看起來對嗎」，
+          而我需要讓兩個問題的答案同時是 yes。
+        </p>
+        <p class="reveal">
+          這不容易，但我越來越覺得這是最有趣的部分——
+          <strong>在兩種語言的邊界上工作，學著翻譯彼此都能理解的東西。</strong>
+          Shader 教會我的，不只是怎麼寫光，而是怎麼在精確和感性之間找到位置。
+        </p>
+
+        <div class="pull-quote reveal" style="border-color:var(--accent);background:rgba(255,107,53,0.03);">
+          <p>"技術是手段，感知是目的。好的 shader 讓人忘記它的存在。"</p>
+        </div>
+
+      </div>
+
+      <!-- POST FOOTER -->
+      <div class="post-footer reveal">
+        <div class="post-footer-label">下一篇</div>
+        <a href="post.html" class="next-post">
+          <span class="next-post-tag">隨筆</span>
+          <div class="next-post-title">Wittgenstein 說的那條界線</div>
+          <p class="next-post-excerpt">語言的邊界就是世界的邊界。那跨領域是在越界，還是在擴張語言？</p>
+        </a>
+        <a href="blog.html" class="back-btn">← 回到 Field Notes</a>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // Starfield
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    const stars = Array.from({length:120}, () => ({ x: Math.random()*innerWidth, y: Math.random()*innerHeight, r: Math.random()*1.1+0.2, alpha: Math.random()*0.4+0.1, speed: Math.random()*0.012+0.003, phase: Math.random()*Math.PI*2 }));
+    (function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      const t = Date.now()/1000;
+      stars.forEach(s => { const a = s.alpha*(0.5+0.5*Math.sin(t*s.speed*60+s.phase)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(200,220,255,${a})`; ctx.fill(); });
+      requestAnimationFrame(draw);
+    })();
+
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; });
+    (function animRing() { rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); })();
+    document.querySelectorAll('a').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width='18px'; cursor.style.height='18px'; ring.style.width='52px'; ring.style.height='52px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='32px'; ring.style.height='32px'; });
+    });
+
+    // Reading progress
+    const progressBar = document.getElementById('progressBar');
+    const sidebarProgress = document.getElementById('sidebarProgress');
+    const content = document.getElementById('postContent');
+    function updateProgress() {
+      const contentTop = content.offsetTop;
+      const contentH = content.offsetHeight;
+      const scrolled = window.scrollY - contentTop + window.innerHeight * 0.2;
+      const pct = Math.max(0, Math.min(100, (scrolled / contentH) * 100));
+      progressBar.style.width = pct + '%';
+      if (sidebarProgress) sidebarProgress.style.width = pct + '%';
+
+      // TOC active state
+      const sections = ['s1','s2','s3','s4'];
+      sections.forEach((id, i) => {
+        const el = document.getElementById(id);
+        const toc = document.getElementById('toc-' + (i+1));
+        if (!el || !toc) return;
+        const top = el.getBoundingClientRect().top;
+        toc.classList.toggle('active', top < window.innerHeight * 0.4);
+      });
+    }
+    window.addEventListener('scroll', updateProgress);
+    updateProgress();
+
+    // Scroll reveal
+    const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:0.08});
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  </script>
+</body>
+</html>
